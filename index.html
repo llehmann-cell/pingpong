@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#13211d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="PinPang" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>PinPang Strava</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navigation principale">
+        <a class="brand" href="#home" aria-label="PinPang Accueil">
+          <span class="brand-mark">PPA</span>
+          <span>
+            <strong>Ping Pang Paris</strong>
+            <small>New school of ping pong</small>
+          </span>
+        </a>
+
+        <nav class="nav-list">
+          <button class="nav-item is-active" data-view="home" type="button">
+            <span class="icon" aria-hidden="true">⌂</span><span>Accueil</span>
+          </button>
+          <button class="nav-item" data-view="map" type="button">
+            <span class="icon" aria-hidden="true">⌖</span><span>Carte</span>
+          </button>
+          <button class="nav-item" data-view="training" type="button">
+            <span class="icon" aria-hidden="true">▦</span><span>Entraînement</span>
+          </button>
+          <button class="nav-item" data-view="stats" type="button">
+            <span class="icon" aria-hidden="true">▥</span><span>Stats</span>
+          </button>
+          <button class="nav-item" data-view="social" type="button">
+            <span class="icon" aria-hidden="true">◌</span><span>Social</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-card">
+          <p class="eyebrow">Streak actif</p>
+          <strong>18 jours</strong>
+          <span>Objectif: top 10% défenseurs</span>
+          <div class="mini-progress"><span style="width: 74%"></span></div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Clubhouse digital</p>
+            <h1>Play better avec une tech intégrée.</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-button" type="button" title="Rechercher" aria-label="Rechercher">⌕</button>
+            <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">◐</button>
+            <button class="primary-action" type="button" id="startSession">Nouvelle séance</button>
+          </div>
+        </header>
+
+        <section class="mobile-tabs" aria-label="Navigation mobile">
+          <button class="mobile-tab is-active" data-view="home" type="button">Accueil</button>
+          <button class="mobile-tab" data-view="map" type="button">Carte</button>
+          <button class="mobile-tab" data-view="training" type="button">Train</button>
+          <button class="mobile-tab" data-view="stats" type="button">Stats</button>
+          <button class="mobile-tab" data-view="social" type="button">Social</button>
+        </section>
+
+        <section class="view is-visible" id="home">
+          <div class="hero-grid">
+            <article class="player-panel">
+              <div class="player-cover"></div>
+              <div class="player-info">
+                <div class="avatar">EL</div>
+                <div>
+                  <h2>Emma Lehmann</h2>
+                  <p>Niveau 1450 • Attaquante rotation • Ping Pang Paris</p>
+                </div>
+              </div>
+              <div class="profile-metrics">
+                <span><strong>82%</strong> régularité</span>
+                <span><strong>64 h</strong> volume annuel</span>
+                <span><strong>31</strong> matchs</span>
+              </div>
+            </article>
+
+            <article class="annual-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Performance annuelle</p>
+                  <h2>2026</h2>
+                </div>
+                <span class="trend">+12%</span>
+              </div>
+              <div class="bar-chart" aria-label="Volume mensuel d'entraînement">
+                <span style="height: 35%"></span>
+                <span style="height: 48%"></span>
+                <span style="height: 56%"></span>
+                <span style="height: 72%"></span>
+                <span style="height: 86%"></span>
+                <span style="height: 65%"></span>
+                <span style="height: 78%"></span>
+                <span style="height: 92%"></span>
+                <span style="height: 81%"></span>
+                <span style="height: 58%"></span>
+                <span style="height: 47%"></span>
+                <span style="height: 70%"></span>
+              </div>
+            </article>
+          </div>
+
+          <div class="layout-grid">
+            <section class="feed-section">
+              <div class="section-head">
+                <h2>Fil d'activité</h2>
+                <button class="ghost-button" type="button">Tout voir</button>
+              </div>
+              <div class="activity-feed" id="activityFeed"></div>
+            </section>
+
+            <aside class="side-stack">
+              <section class="panel">
+                <div class="section-head">
+                  <h2>Badges</h2>
+                  <span class="count-pill">9/24</span>
+                </div>
+                <div class="badges" id="badges"></div>
+              </section>
+              <section class="panel">
+                <div class="section-head">
+                  <h2>Matériel</h2>
+                  <span class="count-pill">Impact</span>
+                </div>
+                <div class="gear-card">
+                  <strong>Bois Off- + Dignics 09C</strong>
+                  <p>42 h jouées • adhérence estimée 78% • changement recommandé dans 18 h.</p>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="map">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Clubs, segments, légendes locales</p>
+              <h2>Carte PinPang</h2>
+            </div>
+            <div class="segmented">
+              <button class="is-selected" type="button" data-filter="all">Tout</button>
+              <button type="button" data-filter="club">Clubs</button>
+              <button type="button" data-filter="segment">Segments</button>
+            </div>
+          </div>
+          <div class="map-layout">
+            <div class="map-visual" aria-label="Carte stylisée des clubs et segments">
+              <div class="table-map">
+                <span class="net"></span>
+                <button class="map-pin club" style="left: 18%; top: 28%" data-name="Paris Ping 11" type="button">1</button>
+                <button class="map-pin segment" style="left: 52%; top: 44%" data-name="Topspin 50 balles" type="button">2</button>
+                <button class="map-pin club" style="left: 76%; top: 30%" data-name="Levallo Ping Arena" type="button">3</button>
+                <button class="map-pin segment" style="left: 33%; top: 72%" data-name="Service court revers" type="button">4</button>
+                <button class="map-pin club" style="left: 69%; top: 74%" data-name="Montreuil TT" type="button">5</button>
+              </div>
+              <p id="mapHint">Sélectionne un point pour voir le club ou segment.</p>
+            </div>
+            <div class="map-list" id="mapList"></div>
+          </div>
+        </section>
+
+        <section class="view" id="training">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Journal d'entraînement</p>
+              <h2>Séances, exercices et volume</h2>
+            </div>
+            <button class="primary-action" type="button">Ajouter</button>
+          </div>
+          <div class="training-grid" id="trainingGrid"></div>
+        </section>
+
+        <section class="view" id="stats">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Résultats & progression</p>
+              <h2>Matchs, styles et comparaisons</h2>
+            </div>
+            <select class="select" aria-label="Période">
+              <option>12 derniers mois</option>
+              <option>90 derniers jours</option>
+              <option>Saison actuelle</option>
+            </select>
+          </div>
+          <div class="stats-grid">
+            <article class="stat-tile"><span>Victoires</span><strong>22</strong><small>71% win rate</small></article>
+            <article class="stat-tile"><span>2 vs 2</span><strong>8-3</strong><small>meilleur duo: Lila</small></article>
+            <article class="stat-tile"><span>Tournantes</span><strong>14</strong><small>top 3 du club</small></article>
+            <article class="stat-tile"><span>Progression</span><strong>+118</strong><small>points simulés</small></article>
+          </div>
+          <div class="comparison-panel">
+            <div class="section-head">
+              <h2>Comparer ma progression</h2>
+              <span class="count-pill">vs amis</span>
+            </div>
+            <div id="compareRows"></div>
+          </div>
+        </section>
+
+        <section class="view" id="social">
+          <div class="social-grid">
+            <section class="panel">
+              <div class="section-head">
+                <h2>Amis & profils</h2>
+                <button class="ghost-button" type="button">Inviter</button>
+              </div>
+              <div id="friendsList"></div>
+            </section>
+            <section class="panel chat-panel">
+              <div class="section-head">
+                <h2>Conversation</h2>
+                <span class="count-pill">Club Paris 11</span>
+              </div>
+              <div class="messages" id="messages"></div>
+              <form class="chat-form" id="chatForm">
+                <input type="text" name="message" placeholder="Message au groupe..." autocomplete="off" />
+                <button class="icon-button" type="submit" aria-label="Envoyer">↗</button>
+              </form>
+            </section>
+            <section class="panel">
+              <div class="section-head">
+                <h2>Challenges & events</h2>
+                <span class="count-pill">Mai</span>
+              </div>
+              <div id="challengeList"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
