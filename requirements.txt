@@ -5,3 +5,7 @@ redis
 numba
 sqlalchemy
 psycopg2-binary
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pydantic[email]

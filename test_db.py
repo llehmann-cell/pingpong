@@ -2,7 +2,6 @@ import psycopg2
 
 def test_connexion():
     try:
-        # Remplace bien 'mon_mot_de_passe' par celui que tu as choisi !
         conn = psycopg2.connect(
             host="localhost",
             port="5432",
@@ -12,7 +11,6 @@ def test_connexion():
         )
         cur = conn.cursor()
         
-        # On demande à la base de nous donner le nom des joueurs qu'on a créé
         cur.execute("SELECT name, rating FROM players;")
         rows = cur.fetchall()
         
