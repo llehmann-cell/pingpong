@@ -11,7 +11,7 @@ def test_connexion():
         )
         cur = conn.cursor()
         
-        cur.execute("SELECT name, rating FROM players;")
+        cur.execute("SELECT pseudo, r FROM players;")
         rows = cur.fetchall()
         
         print("CONNEXION RÉUSSIE !")

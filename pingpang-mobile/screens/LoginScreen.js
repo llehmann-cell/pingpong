@@ -18,7 +18,7 @@ export default function LoginScreen({ navigation }) {
       });
       
       await AsyncStorage.setItem('userToken', response.data.access_token);
-      navigation.replace('Dashboard');
+      navigation.replace('Main');
     } catch (error) {
       Alert.alert('Erreur', 'Identifiant ou mot de passe incorrect');
     }

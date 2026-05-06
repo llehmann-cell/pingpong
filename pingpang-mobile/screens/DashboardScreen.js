@@ -27,7 +27,7 @@ export default function DashboardScreen({ navigation }) {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
-    navigation.replace('Login');
+    navigation.getParent()?.getParent()?.replace('Login') ?? navigation.replace('Login');
   };
 
   if (loading) {
