@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c3b31" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Ping Pang" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Ping Pang Paris</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css?v=site-desktop-2" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <button class="icon-button back-button" type="button" aria-label="Retour">‹</button>
+        <div class="header-title">
+          <strong>Ping Pang Paris</strong>
+          <span id="viewSubtitle">Accueil</span>
+        </div>
+        <nav class="desktop-nav" aria-label="Navigation desktop">
+          <button class="is-active" data-view="home" type="button">Accueil</button>
+          <button data-view="booking" type="button">Réserver</button>
+          <button data-view="social" type="button">Social</button>
+          <button data-view="profile" type="button">Profil</button>
+          <button data-view="challenges" type="button">Challenges</button>
+        </nav>
+        <button class="icon-button message-button" type="button" id="openMessages" aria-label="Messages">
+          <span>✉</span>
+          <em>2</em>
+        </button>
+      </header>
+
+      <main class="screen-wrap">
+        <section class="screen is-active" id="home">
+          <div class="home-hero">
+            <div>
+              <p class="eyebrow">Aujourd'hui à Paris</p>
+              <h1>Joue, réserve, progresse.</h1>
+              <p>Ton club, tes matchs et ta progression dans une seule app.</p>
+            </div>
+            <button class="primary-action" type="button" data-view="booking">Réserver</button>
+          </div>
+
+          <div class="streak-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Streak</p>
+                <h2>18 jours actifs</h2>
+              </div>
+              <span class="xp-pill">+120 XP</span>
+            </div>
+            <div class="ball-streak" aria-label="Streak sur sept jours">
+              <span class="is-done"></span><span class="is-done"></span><span class="is-done"></span>
+              <span class="is-done"></span><span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div class="home-grid">
+            <article class="simple-card" data-view="booking">
+              <span>16:30</span>
+              <strong>3 tables disponibles</strong>
+              <p>Table 1, 2 ou 4 • hors peak</p>
+            </article>
+            <article class="simple-card" data-view="social">
+              <span>Matching</span>
+              <strong>4 joueurs compatibles</strong>
+              <p>Paris • niveau 1300-1600</p>
+            </article>
+            <article class="simple-card" data-view="profile">
+              <span>Dernière perf</span>
+              <strong>Topspin 84 km/h</strong>
+              <p>540 coups • endurance 78%</p>
+            </article>
+            <article class="simple-card" data-view="challenges">
+              <span>Challenge</span>
+              <strong>Top 10 cette semaine</strong>
+              <p>Plus que 220 XP à gagner</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen" id="booking">
+          <div class="tabs">
+            <button class="is-active" type="button">Tables</button>
+            <button type="button">Événements</button>
+          </div>
+
+          <div class="date-row" aria-label="Dates">
+            <button class="is-active" type="button">Mer. 01/05</button>
+            <button type="button">Jeu. 02/05</button>
+            <button type="button">Ven. 03/05</button>
+            <button type="button">Sam. 04/05</button>
+          </div>
+
+          <div class="filter-row">
+            <span>Filtrer par :</span>
+            <button class="is-active" type="button">Table</button>
+            <button type="button">Coach</button>
+          </div>
+
+          <div class="booking-list" id="bookingList">
+            <article class="booking-row"><strong>16:00</strong><p>3 tables disponibles</p><button type="button"></button></article>
+          </div>
+
+          <section class="event-card">
+            <div>
+              <p class="eyebrow">18:30 - 20:30</p>
+              <h2>Happy Hours</h2>
+              <span>8 places restantes • Paris</span>
+            </div>
+            <button class="primary-action" type="button" data-success="Inscription Happy Hours confirmée.">Participer</button>
+          </section>
+        </section>
+
+        <section class="screen" id="social">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Communauté</p>
+              <h1>Match avec les bons joueurs.</h1>
+            </div>
+            <button class="icon-button" type="button" aria-label="Filtres">≡</button>
+          </div>
+          <div class="player-list" id="playerList"></div>
+        </section>
+
+        <section class="screen" id="profile">
+          <div class="profile-card">
+            <div class="avatar">EL</div>
+            <h1>Emma Lehmann</h1>
+            <p>Attaquante rotation • Paris • 1450 pts</p>
+            <div class="profile-counts">
+              <span><strong>31</strong> posts</span>
+              <span><strong>248</strong> followers</span>
+              <span><strong>186</strong> suivis</span>
+            </div>
+          </div>
+
+          <article class="performance-post">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Performance postée</p>
+                <h2>Topspin coup droit</h2>
+              </div>
+              <span class="xp-pill">84 km/h</span>
+            </div>
+            <div class="metrics-grid">
+              <span><strong>540</strong> coups</span>
+              <span><strong>38°</strong> angle moyen</span>
+              <span><strong>78%</strong> endurance</span>
+              <span><strong>42 min</strong> temps</span>
+            </div>
+            <button class="primary-action" type="button" data-success="Performance publiée sur ton profil.">Poster ma perf</button>
+          </article>
+        </section>
+
+        <section class="screen" id="challenges">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Challenges</p>
+              <h1>Classement et objectifs.</h1>
+            </div>
+          </div>
+
+          <section class="leaderboard-card">
+            <div class="card-head">
+              <h2>Gold League Paris</h2>
+              <span class="xp-pill">128 inscrits</span>
+            </div>
+            <div id="leaderboard"></div>
+          </section>
+
+          <div class="challenge-grid">
+            <article class="challenge-card">
+              <p class="eyebrow">Perso</p>
+              <h2>10 h de panier</h2>
+              <div class="progress"><span style="width: 65%"></span></div>
+            </article>
+            <article class="challenge-card">
+              <p class="eyebrow">Team</p>
+              <h2>Double du mois</h2>
+              <div class="progress"><span style="width: 72%"></span></div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Navigation">
+        <button class="is-active" data-view="home" type="button"><span>⌂</span>Accueil</button>
+        <button data-view="booking" type="button"><span>▣</span>Réserver</button>
+        <button data-view="social" type="button"><span>◌</span>Social</button>
+        <button data-view="profile" type="button"><span>♡</span>Profil</button>
+        <button data-view="challenges" type="button"><span>◎</span>Challenges</button>
+      </nav>
+    </div>
+
+    <aside class="message-drawer" id="messageDrawer" aria-hidden="true">
+      <div class="drawer-head">
+        <strong>Messages</strong>
+        <button class="icon-button" type="button" id="closeMessages" aria-label="Fermer">×</button>
+      </div>
+      <div class="message-list" id="messageList"></div>
+      <form class="message-form" id="messageForm">
+        <input type="text" name="message" placeholder="Écrire à la communauté..." autocomplete="off" />
+        <button type="submit">↗</button>
+      </form>
+    </aside>
+
+    <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
+    <script src="app.js?v=site-desktop-2"></script>
+  </body>
+</html>

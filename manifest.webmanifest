@@ -1,0 +1,18 @@
+{
+  "name": "PinPang Strava",
+  "short_name": "PinPang",
+  "description": "Ping Pang Paris digital club app pour joueurs de tennis de table.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#13211d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
