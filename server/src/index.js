@@ -9,6 +9,10 @@ import { computeGlicko2 } from './rating.js';
 const app = express();
 const port = Number(process.env.PORT || 4000);
 const jwtSecret = process.env.JWT_SECRET;
+const configuredOrigins = String(process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is required');
@@ -18,9 +22,29 @@ if (!jwtSecret) {
   throw new Error('JWT_SECRET is required');
 }
 
+function isLocalDevOrigin(origin) {
+  if (!origin) {
+    return true;
+  }
+
+  if (configuredOrigins.includes('*') || configuredOrigins.includes(origin)) {
+    return true;
+  }
+
+  return /^https?:\/\/(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(
+    origin
+  );
+}
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || true,
+    origin(origin, callback) {
+      if (isLocalDevOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin not allowed by CORS: ${origin}`));
+      }
+    },
     credentials: true,
   })
 );

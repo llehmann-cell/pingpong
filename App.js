@@ -18,7 +18,11 @@ const visualClubTable = require('./assets/visual-club-table.png');
 const visualClubCafe = require('./assets/visual-club-cafe.png');
 
 const tabs = ['Today', 'Play', 'Clubs', 'Rank', 'Gear'];
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  (typeof window !== 'undefined' && window.location?.hostname
+    ? `${window.location.protocol}//${window.location.hostname}:4000`
+    : 'http://localhost:4000');
 
 const baseFeed = [
   {
