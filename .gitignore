@@ -25,6 +25,11 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+.api.log
+.api.pid
+.web.log
+.web.pid
+.web-lan.log
 
 # macOS
 .DS_Store
