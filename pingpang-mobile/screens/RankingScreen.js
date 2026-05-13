@@ -45,12 +45,32 @@ export default function RankingScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Mon pays (depuis le profil)
+  const [myCountry, setMyCountry] = useState(null);
+
   // Recherche de pays
   const [countryQuery, setCountryQuery] = useState('');
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [showCountryModal, setShowCountryModal] = useState(false);
   const [countryLoading, setCountryLoading] = useState(false);
+
+  // ── Charger le pays du profil connecté ────────
+  useEffect(() => {
+    const loadMyCountry = async () => {
+      try {
+        const meRes = await api.get('/me');
+        const countryId = meRes.data?.country_id;
+        if (countryId) {
+          const cRes = await api.get(`/countries/${countryId}`);
+          setMyCountry(cRes.data);
+        }
+      } catch (e) {
+        // pas de pays défini ou non connecté
+      }
+    };
+    loadMyCountry();
+  }, []);
 
   // ── Chargement du classement ───────────────
   const fetchRanking = useCallback(async (force = false) => {
@@ -125,7 +145,13 @@ export default function RankingScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, tab === 'national' && styles.tabActive]}
-          onPress={() => setTab('national')}
+          onPress={() => {
+            setTab('national');
+            // Auto-sélection du pays du profil si rien n'est sélectionné
+            if (!selectedCountry && myCountry) {
+              setSelectedCountry(myCountry);
+            }
+          }}
         >
           <Text style={[styles.tabText, tab === 'national' && styles.tabTextActive]}>🏳️ NATIONAL</Text>
         </TouchableOpacity>
@@ -133,15 +159,27 @@ export default function RankingScreen() {
 
       {/* ── Sélecteur de pays (tab national) ── */}
       {tab === 'national' && (
-        <TouchableOpacity
-          style={styles.countrySelector}
-          onPress={() => setShowCountryModal(true)}
-        >
-          <Text style={styles.countrySelectorText}>
-            {selectedCountry ? `🏳️ ${selectedCountry.name}` : 'Sélectionner un pays…'}
-          </Text>
-          <Text style={styles.chevron}>›</Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            style={styles.countrySelector}
+            onPress={() => setShowCountryModal(true)}
+          >
+            <Text style={styles.countrySelectorText}>
+              {selectedCountry ? `🏳️ ${selectedCountry.name}` : 'Sélectionner un pays…'}
+            </Text>
+            <Text style={styles.chevron}>›</Text>
+          </TouchableOpacity>
+
+          {/* Chip "Mon pays" — visible seulement si myCountry existe et est différent du sélectionné */}
+          {myCountry && selectedCountry?.id !== myCountry.id && (
+            <TouchableOpacity
+              style={styles.myCountryChip}
+              onPress={() => setSelectedCountry(myCountry)}
+            >
+              <Text style={styles.myCountryChipText}>🏠 Mon pays : {myCountry.name}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       )}
 
       {/* ── Classement ── */}

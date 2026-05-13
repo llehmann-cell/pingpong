@@ -518,3 +518,12 @@ def get_countries(q: str = "", db: Session = Depends(get_db)):
     if q:
         query = query.filter(Country.name.ilike(f"%{q}%"))
     return query.order_by(Country.name).all()
+
+
+@app.get("/countries/{country_id}", response_model=CountryResponse)
+def get_country(country_id: int, db: Session = Depends(get_db)):
+    """Retourne un pays par son ID."""
+    country = db.query(Country).filter(Country.id == country_id).first()
+    if not country:
+        raise HTTPException(status_code=404, detail="Pays introuvable")
+    return country
