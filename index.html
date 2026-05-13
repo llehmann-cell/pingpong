@@ -10,7 +10,7 @@
     <title>Ping Pang Paris</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=site-desktop-2" />
+    <link rel="stylesheet" href="styles.css?v=shop-1" />
   </head>
   <body>
     <div class="app">
@@ -24,9 +24,14 @@
           <button class="is-active" data-view="home" type="button">Accueil</button>
           <button data-view="booking" type="button">Réserver</button>
           <button data-view="social" type="button">Social</button>
+          <button class="has-dot" data-view="shop" type="button">Shop</button>
           <button data-view="profile" type="button">Profil</button>
-          <button data-view="challenges" type="button">Challenges</button>
+          <button class="has-dot" data-view="challenges" type="button">Challenges</button>
         </nav>
+        <button class="icon-button cart-button has-dot" type="button" id="openCart" aria-label="Panier">
+          <span>🛒</span>
+          <em id="cartCount">0</em>
+        </button>
         <button class="icon-button message-button" type="button" id="openMessages" aria-label="Messages">
           <span>✉</span>
           <em>2</em>
@@ -78,6 +83,11 @@
               <span>Challenge</span>
               <strong>Top 10 cette semaine</strong>
               <p>Plus que 220 XP à gagner</p>
+            </article>
+            <article class="simple-card has-dot" data-view="shop">
+              <span>Shop</span>
+              <strong>Nouvelle tenue performance</strong>
+              <p>Fiber short, hoodie et Icons collection</p>
             </article>
           </div>
         </section>
@@ -154,6 +164,60 @@
             </div>
             <button class="primary-action" type="button" data-success="Performance publiée sur ton profil.">Poster ma perf</button>
           </article>
+
+          <section class="improvement-card">
+            <p class="eyebrow">Perspectives</p>
+            <h2>Points d'amélioration</h2>
+            <ul>
+              <li><strong>Angle moyen:</strong> viser 42° sur topspin pour plus de sécurité.</li>
+              <li><strong>Endurance:</strong> ajouter 2 séances courtes pour passer de 78% à 84%.</li>
+              <li><strong>Vitesse:</strong> travailler l'accélération poignet sur 3 séries de 50 coups.</li>
+            </ul>
+          </section>
+        </section>
+
+        <section class="screen" id="shop">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Collection officielle</p>
+              <h1>Commande ta tenue.</h1>
+            </div>
+            <button class="primary-action" type="button" id="shopCheckout">Voir panier</button>
+          </div>
+
+          <div class="shop-tabs" aria-label="Catégories shop">
+            <button class="is-active" type="button" data-shop-filter="all">All</button>
+            <button type="button" data-shop-filter="icons">Icons</button>
+            <button type="button" data-shop-filter="essential">Essential</button>
+            <button type="button" data-shop-filter="effect">Effect</button>
+          </div>
+
+          <div class="shop-highlight">
+            <div>
+              <p class="eyebrow">Ping Pang Performance</p>
+              <h2>Tenues pensées pour jouer mieux.</h2>
+              <p>Respirant, souple, extensible, séchage rapide. Achète depuis l'app, récupère au club ou fais livrer.</p>
+            </div>
+          </div>
+
+          <div class="performance-editorial" aria-label="Capsules performance">
+            <article>
+              <img src="assets/shop/performance-men.png" alt="Impulse Tee-Shirt et Fiber Short PP.01" />
+              <div>
+                <p class="eyebrow">Performance</p>
+                <h2>Impulse Tee-Shirt + Fiber Short PP.01</h2>
+              </div>
+            </article>
+            <article>
+              <img src="assets/shop/performance-women.png" alt="Spark Polo Crop et Flow Skirt PP.01" />
+              <div>
+                <p class="eyebrow">Performance</p>
+                <h2>Spark Polo Crop + Flow Skirt PP.01</h2>
+              </div>
+            </article>
+          </div>
+
+          <div class="shop-grid" id="shopGrid"></div>
         </section>
 
         <section class="screen" id="challenges">
@@ -184,6 +248,16 @@
               <div class="progress"><span style="width: 72%"></span></div>
             </article>
           </div>
+
+          <section class="improvement-card challenge-focus">
+            <p class="eyebrow">Prochain cap</p>
+            <h2>Plan de progression</h2>
+            <ul>
+              <li><strong>Cette semaine:</strong> 3 réservations courtes pour maintenir la streak.</li>
+              <li><strong>Challenge perso:</strong> 1 500 coups enregistrés avant dimanche.</li>
+              <li><strong>Challenge team:</strong> trouver un duo compatible à plus de 85%.</li>
+            </ul>
+          </section>
         </section>
       </main>
 
@@ -191,8 +265,9 @@
         <button class="is-active" data-view="home" type="button"><span>⌂</span>Accueil</button>
         <button data-view="booking" type="button"><span>▣</span>Réserver</button>
         <button data-view="social" type="button"><span>◌</span>Social</button>
+        <button class="has-dot" data-view="shop" type="button"><span>🛒</span>Shop</button>
         <button data-view="profile" type="button"><span>♡</span>Profil</button>
-        <button data-view="challenges" type="button"><span>◎</span>Challenges</button>
+        <button class="has-dot" data-view="challenges" type="button"><span>◎</span>Défis</button>
       </nav>
     </div>
 
@@ -208,7 +283,19 @@
       </form>
     </aside>
 
+    <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+      <div class="drawer-head">
+        <strong>Panier</strong>
+        <button class="icon-button" type="button" id="closeCart" aria-label="Fermer">×</button>
+      </div>
+      <div class="cart-list" id="cartList"></div>
+      <div class="cart-footer">
+        <div><span>Total</span><strong id="cartTotal">€0,00</strong></div>
+        <button class="primary-action" type="button" data-success="Commande préparée. Paiement sécurisé à connecter.">Commander</button>
+      </div>
+    </aside>
+
     <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=site-desktop-2"></script>
+    <script src="app.js?v=shop-1"></script>
   </body>
 </html>

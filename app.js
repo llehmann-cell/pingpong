@@ -14,6 +14,7 @@ const subtitles = {
   home: "Accueil",
   booking: "Tables & événements",
   social: "Communauté",
+  shop: "Collection",
   profile: "Compte",
   challenges: "Challenges",
 };
@@ -46,6 +47,89 @@ const messages = [
   { author: "Emma", text: "Je peux jouer à 18:30.", mine: true },
 ];
 
+const products = [
+  {
+    name: "T-shirt IDENTITÉ | Raquette broderie",
+    price: 55,
+    category: "essential",
+    img: "https://pingpang.paris/cdn/shop/products/Identite_Noir_Packshot_PPP3_1024x.jpg?v=1605806804",
+  },
+  {
+    name: "T-shirt I JUSTESSE",
+    price: 50,
+    category: "essential",
+    img: "https://pingpang.paris/cdn/shop/products/Justesse_Noir_Packshot_PPP3_1024x.jpg?v=1734626223",
+  },
+  {
+    name: "Hoodie | AUDACE",
+    price: 90,
+    category: "essential",
+    img: "https://pingpang.paris/cdn/shop/products/IMG_7706_1024x.jpg?v=1605276900",
+  },
+  {
+    name: "T-shirt I INSPIRATION",
+    price: 50,
+    category: "essential",
+    img: "https://pingpang.paris/cdn/shop/products/PingPang220018_1024x.jpg?v=1699385490",
+  },
+  {
+    name: "T-shirt ICONS | JAPAN",
+    price: 39,
+    category: "icons",
+    img: "https://pingpang.paris/cdn/shop/files/Japan_Tshirt_F-1-_-10_1024x.jpg?v=1721345186",
+  },
+  {
+    name: "T-shirt ICONS | FRANCE",
+    price: 39,
+    category: "icons",
+    img: "https://pingpang.paris/cdn/shop/files/FranceTshirtF-1-_-16_1024x.jpg?v=1721376980",
+  },
+  {
+    name: "Polo I ANMTT x PLAY BETTER",
+    price: 59,
+    category: "effect",
+    img: "https://pingpang.paris/cdn/shop/files/AMNTTxPPP-1.1_1024x.jpg?v=1737034305",
+  },
+  {
+    name: "T-shirt I Ping Pang Effect",
+    price: 50,
+    category: "effect",
+    img: "https://pingpang.paris/cdn/shop/files/PPE-1_1024x.jpg?v=1734567406",
+  },
+  {
+    name: "Impulse Tee-Shirt PP.01",
+    price: 69,
+    category: "effect",
+    img: "assets/shop/performance-men.png",
+  },
+  {
+    name: "Fiber Short PP.01",
+    price: 79,
+    category: "effect",
+    img: "assets/shop/performance-shorts.png",
+  },
+  {
+    name: "Spark Polo Crop PP.01",
+    price: 69,
+    category: "effect",
+    img: "assets/shop/performance-women.png",
+  },
+  {
+    name: "Flow Skirt PP.01",
+    price: 79,
+    category: "effect",
+    img: "assets/shop/performance-women.png",
+  },
+  {
+    name: "Kids T-shirt I Choose Your Weapon",
+    price: 35,
+    category: "icons",
+    img: "https://pingpang.paris/cdn/shop/files/CYW-5_e7cd65c1-888b-4c72-90de-cf2aaae354d1_1024x.jpg?v=1734627615",
+  },
+];
+
+const cart = [];
+
 const qs = (selector) => document.querySelector(selector);
 const qsa = (selector) => [...document.querySelectorAll(selector)];
 
@@ -53,6 +137,7 @@ function setView(viewId) {
   qsa(".screen").forEach((screen) => screen.classList.toggle("is-active", screen.id === viewId));
   qsa("[data-view]").forEach((button) => button.classList.toggle("is-active", button.dataset.view === viewId));
   qs("#viewSubtitle").textContent = subtitles[viewId] || "Ping Pang";
+  qsa(`[data-view="${viewId}"]`).forEach((button) => button.classList.remove("has-dot"));
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -126,6 +211,51 @@ function renderMessages() {
     .join("");
 }
 
+function formatPrice(price) {
+  return `€${price.toFixed(2).replace(".", ",")}`;
+}
+
+function renderShop(filter = "all") {
+  const visibleProducts = filter === "all" ? products : products.filter((product) => product.category === filter);
+  qs("#shopGrid").innerHTML = visibleProducts
+    .map(
+      (product) => `
+        <article class="shop-card">
+          <div class="shop-image">
+            <img src="${product.img}" alt="${product.name}" loading="lazy" onerror="this.parentElement.classList.add('image-fallback'); this.remove();" />
+          </div>
+          <div class="shop-info">
+            <p class="eyebrow">${product.category}</p>
+            <h2>${product.name}</h2>
+            <strong>${formatPrice(product.price)}</strong>
+            <button class="primary-action" type="button" data-add-cart="${product.name}">Ajouter</button>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderCart() {
+  qs("#cartCount").textContent = cart.length;
+  qs("#cartTotal").textContent = formatPrice(cart.reduce((sum, product) => sum + product.price, 0));
+  qs("#cartList").innerHTML = cart.length
+    ? cart
+        .map(
+          (product) => `
+            <article class="cart-row">
+              <img src="${product.img}" alt="" />
+              <div>
+                <strong>${product.name}</strong>
+                <span>${formatPrice(product.price)}</span>
+              </div>
+            </article>
+          `,
+        )
+        .join("")
+    : `<p class="empty-cart">Ton panier est vide.</p>`;
+}
+
 qsa("[data-view]").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
 });
@@ -133,6 +263,16 @@ qsa("[data-view]").forEach((button) => {
 document.addEventListener("click", (event) => {
   const success = event.target.closest("[data-success]");
   if (success) showSuccess(success.dataset.success);
+
+  const addCart = event.target.closest("[data-add-cart]");
+  if (addCart) {
+    const product = products.find((item) => item.name === addCart.dataset.addCart);
+    if (!product) return;
+    cart.push(product);
+    renderCart();
+    qs("#openCart").classList.add("has-dot");
+    showSuccess(`${product.name} ajouté au panier.`);
+  }
 });
 
 qs("#openMessages").addEventListener("click", () => {
@@ -143,6 +283,30 @@ qs("#openMessages").addEventListener("click", () => {
 qs("#closeMessages").addEventListener("click", () => {
   qs("#messageDrawer").classList.remove("is-open");
   qs("#messageDrawer").setAttribute("aria-hidden", "true");
+});
+
+qs("#openCart").addEventListener("click", () => {
+  qs("#cartDrawer").classList.add("is-open");
+  qs("#cartDrawer").setAttribute("aria-hidden", "false");
+  qs("#openCart").classList.remove("has-dot");
+});
+
+qs("#closeCart").addEventListener("click", () => {
+  qs("#cartDrawer").classList.remove("is-open");
+  qs("#cartDrawer").setAttribute("aria-hidden", "true");
+});
+
+qs("#shopCheckout").addEventListener("click", () => {
+  qs("#cartDrawer").classList.add("is-open");
+  qs("#cartDrawer").setAttribute("aria-hidden", "false");
+});
+
+qsa("[data-shop-filter]").forEach((button) => {
+  button.addEventListener("click", () => {
+    qsa("[data-shop-filter]").forEach((item) => item.classList.remove("is-active"));
+    button.classList.add("is-active");
+    renderShop(button.dataset.shopFilter);
+  });
 });
 
 qs("#messageForm").addEventListener("submit", (event) => {
@@ -160,3 +324,5 @@ renderBookings();
 renderPlayers();
 renderLeaderboard();
 renderMessages();
+renderShop();
+renderCart();

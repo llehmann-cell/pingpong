@@ -1,5 +1,19 @@
-const CACHE_NAME = "pinpang-v6";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
+const CACHE_NAME = "pinpang-v9";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./manifest.webmanifest",
+  "./icon.svg",
+  "./assets/fonts/open-sauce-one-400.woff2",
+  "./assets/fonts/open-sauce-one-700.woff2",
+  "./assets/fonts/open-sauce-one-900.woff2",
+  "./assets/fonts/open-sauce-two-900.woff2",
+  "./assets/shop/performance-men.png",
+  "./assets/shop/performance-women.png",
+  "./assets/shop/performance-shorts.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
