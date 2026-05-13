@@ -1,243 +1,162 @@
-const activities = [
-  {
-    initials: "EL",
-    title: "Séance topspin coup droit",
-    body: "540 balles, 42 minutes, régularité à 83%. Nouveau record sur le segment Topspin 50 balles.",
-    meta: "Paris Ping 11 • il y a 24 min",
-    kudos: 18,
-  },
-  {
-    initials: "LM",
-    title: "Match 2 vs 2 gagné",
-    body: "Lila & Emma battent Noa & Sami 3-1. Point fort: retours courts et prise d'initiative revers.",
-    meta: "Mode double • hier",
-    kudos: 31,
-  },
-  {
-    initials: "NS",
-    title: "Local legend conservée",
-    body: "Noa reste légende locale sur Service court revers avec 11 sessions ce mois-ci.",
-    meta: "Segment technique • lundi",
-    kudos: 12,
-  },
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  });
+}
+
+if ("caches" in window) {
+  caches.keys().then((keys) => {
+    keys.forEach((key) => caches.delete(key));
+  });
+}
+
+const subtitles = {
+  home: "Accueil",
+  booking: "Tables & événements",
+  social: "Communauté",
+  profile: "Compte",
+  challenges: "Challenges",
+};
+
+const bookings = [
+  { time: "16:00", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
+  { time: "16:30", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
+  { time: "17:00", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
+  { time: "17:30", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
+  { time: "18:30", label: "2 tables disponibles", info: "Happy Hours à côté", tag: "Peak" },
 ];
 
-const badges = ["Streak 18j", "Topspin", "Double", "Legend", "Service", "Volume"];
-
-const mapItems = [
-  { type: "club", title: "Paris Ping 11", detail: "Club favori • 26 joueurs suivis • 4 événements à venir" },
-  { type: "segment", title: "Topspin 50 balles", detail: "Record: 47 réussites • leader: Emma • 132 tentatives" },
-  { type: "club", title: "Levallo Ping Arena", detail: "Club partenaire • 18 tables • tournoi vendredi" },
-  { type: "segment", title: "Service court revers", detail: "Local legend: Noa • 11 séances ce mois-ci" },
-  { type: "club", title: "Montreuil TT", detail: "Open play samedi • niveau moyen 1300-1700" },
+const players = [
+  { name: "Lila Martin", level: "1420 pts", style: "Bloqueuse agressive", match: "94%", city: "Paris 13", status: "Dispo 18:30" },
+  { name: "Noa Simon", level: "1362 pts", style: "Défenseur moderne", match: "88%", city: "Paris 11", status: "Cherche double" },
+  { name: "Sami Diallo", level: "1297 pts", style: "Service variation", match: "82%", city: "Paris 14", status: "Dispo demain" },
+  { name: "Alice Bernard", level: "1510 pts", style: "Topspin vitesse", match: "79%", city: "Paris 5", status: "Challenge perso" },
 ];
 
-const training = [
-  {
-    title: "Séance intensité",
-    volume: "1 h 25 • 820 balles",
-    exercises: ["panier topspin", "bloc actif", "schéma service"],
-    score: "Charge 78",
-  },
-  {
-    title: "Régularité revers",
-    volume: "52 min • 460 balles",
-    exercises: ["revers ligne", "pivot", "contre-top"],
-    score: "Précision 81%",
-  },
-  {
-    title: "Tournante club",
-    volume: "38 min • 7 matchs",
-    exercises: ["points courts", "rotation", "mental"],
-    score: "Rang 2/9",
-  },
-];
-
-const friends = [
-  { name: "Lila Martin", style: "Bloqueuse agressive", change: "+86 pts" },
-  { name: "Noa Simon", style: "Défenseur moderne", change: "+54 pts" },
-  { name: "Sami Diallo", style: "Serveur variation", change: "+41 pts" },
-];
-
-const challenges = [
-  { title: "10 h de panier", detail: "6 h 30 complétées", progress: 65 },
-  { title: "Double du mois", detail: "8 victoires sur 12", progress: 72 },
-  { title: "Event: tournoi amical", detail: "Paris 11 • 16 mai", progress: 40 },
+const leaderboard = [
+  { name: "Emma", points: "4 820 XP", rank: 1 },
+  { name: "Lila", points: "4 610 XP", rank: 2 },
+  { name: "Noa", points: "4 180 XP", rank: 3 },
+  { name: "Sami", points: "3 970 XP", rank: 4 },
 ];
 
 const messages = [
-  { text: "Qui est dispo pour une tournante jeudi soir ?", mine: false },
-  { text: "Je viens, et je peux amener des balles neuves.", mine: true },
-  { text: "Parfait. On ajoute un défi services courts ?", mine: false },
-];
-
-const compare = [
-  { name: "Emma", progress: 82, detail: "+118 points" },
-  { name: "Lila", progress: 74, detail: "+86 points" },
-  { name: "Noa", progress: 67, detail: "+54 points" },
-  { name: "Sami", progress: 61, detail: "+41 points" },
+  { author: "Lila", text: "Dispo pour une tournante ce soir ?" },
+  { author: "Noa", text: "Je cherche un partenaire 2 vs 2 jeudi." },
+  { author: "Emma", text: "Je peux jouer à 18:30.", mine: true },
 ];
 
 const qs = (selector) => document.querySelector(selector);
 const qsa = (selector) => [...document.querySelectorAll(selector)];
 
-function renderActivities() {
-  qs("#activityFeed").innerHTML = activities
+function setView(viewId) {
+  qsa(".screen").forEach((screen) => screen.classList.toggle("is-active", screen.id === viewId));
+  qsa("[data-view]").forEach((button) => button.classList.toggle("is-active", button.dataset.view === viewId));
+  qs("#viewSubtitle").textContent = subtitles[viewId] || "Ping Pang";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showSuccess(text) {
+  const toast = qs("#successToast");
+  toast.textContent = text;
+  toast.classList.add("is-visible");
+  setTimeout(() => toast.classList.remove("is-visible"), 2400);
+}
+
+function renderBookings() {
+  qs("#bookingList").innerHTML = bookings
     .map(
-      (activity) => `
-        <article class="activity-card">
-          <div class="activity-avatar">${activity.initials}</div>
+      (slot) => `
+        <article class="booking-row">
+          <strong>${slot.time}</strong>
           <div>
-            <h3>${activity.title}</h3>
-            <p>${activity.body}</p>
-            <p class="activity-meta">${activity.meta}</p>
+            ${slot.tag ? `<em>${slot.tag}</em>` : ""}
+            <p>${slot.label}</p>
+            <span>${slot.info}</span>
           </div>
-          <button class="kudos" type="button" aria-label="Ajouter un kudos">${activity.kudos}</button>
+          <button type="button" aria-label="Réserver ${slot.time}" data-success="Table réservée à ${slot.time}."></button>
         </article>
       `,
     )
     .join("");
 }
 
-function renderBadges() {
-  qs("#badges").innerHTML = badges.map((badge) => `<div class="badge">${badge}</div>`).join("");
-}
-
-function renderMap(filter = "all") {
-  const visible = filter === "all" ? mapItems : mapItems.filter((item) => item.type === filter);
-  qs("#mapList").innerHTML = visible
+function renderPlayers() {
+  qs("#playerList").innerHTML = players
     .map(
-      (item, index) => `
-        <article class="map-card ${index === 0 ? "is-featured" : ""}">
-          <p class="eyebrow">${item.type === "club" ? "Club" : "Segment"}</p>
-          <h3>${item.title}</h3>
-          <p>${item.detail}</p>
-        </article>
-      `,
-    )
-    .join("");
-}
-
-function renderTraining() {
-  qs("#trainingGrid").innerHTML = training
-    .map(
-      (session) => `
-        <article class="training-card">
+      (player) => `
+        <article class="player-row">
+          <div class="avatar small">${player.name.split(" ").map((part) => part[0]).join("")}</div>
           <div>
-            <p class="eyebrow">${session.volume}</p>
-            <h3>${session.title}</h3>
-            <div class="exercise-list">${session.exercises.map((item) => `<span>${item}</span>`).join("")}</div>
+            <strong>${player.name}</strong>
+            <p>${player.style} • ${player.level}</p>
+            <span>${player.city} • ${player.status}</span>
           </div>
-          <strong>${session.score}</strong>
+          <button type="button" data-success="Match demandé à ${player.name}.">${player.match}</button>
         </article>
       `,
     )
     .join("");
 }
 
-function renderSocial() {
-  qs("#friendsList").innerHTML = friends
+function renderLeaderboard() {
+  qs("#leaderboard").innerHTML = leaderboard
     .map(
-      (friend) => `
-        <article class="friend-row">
-          <div>
-            <strong>${friend.name}</strong>
-            <p>${friend.style}</p>
-          </div>
-          <span class="count-pill">${friend.change}</span>
+      (player) => `
+        <article class="leader-row">
+          <span>${player.rank}</span>
+          <strong>${player.name}</strong>
+          <em>${player.points}</em>
         </article>
       `,
     )
     .join("");
-
-  qs("#challengeList").innerHTML = challenges
-    .map(
-      (challenge) => `
-        <article class="challenge-row">
-          <div>
-            <strong>${challenge.title}</strong>
-            <p>${challenge.detail}</p>
-            <div class="progress-line"><span style="width: ${challenge.progress}%"></span></div>
-          </div>
-        </article>
-      `,
-    )
-    .join("");
-
-  renderMessages();
 }
 
 function renderMessages() {
-  qs("#messages").innerHTML = messages
-    .map((message) => `<div class="message ${message.mine ? "mine" : ""}">${message.text}</div>`)
-    .join("");
-}
-
-function renderCompare() {
-  qs("#compareRows").innerHTML = compare
+  qs("#messageList").innerHTML = messages
     .map(
-      (player) => `
-        <article class="compare-row">
-          <div>
-            <strong>${player.name}</strong>
-            <div class="progress-line"><span style="width: ${player.progress}%"></span></div>
-          </div>
-          <span>${player.detail}</span>
-        </article>
+      (message) => `
+        <div class="message ${message.mine ? "mine" : ""}">
+          <strong>${message.author}</strong>
+          <p>${message.text}</p>
+        </div>
       `,
     )
     .join("");
-}
-
-function setView(viewId) {
-  qsa(".view").forEach((view) => view.classList.toggle("is-visible", view.id === viewId));
-  qsa("[data-view]").forEach((button) => button.classList.toggle("is-active", button.dataset.view === viewId));
-}
-
-function showToast(text) {
-  const toast = qs("#toast");
-  toast.textContent = text;
-  toast.classList.add("is-visible");
-  window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
 }
 
 qsa("[data-view]").forEach((button) => {
   button.addEventListener("click", () => setView(button.dataset.view));
 });
 
-qsa("[data-filter]").forEach((button) => {
-  button.addEventListener("click", () => {
-    qsa("[data-filter]").forEach((item) => item.classList.remove("is-selected"));
-    button.classList.add("is-selected");
-    renderMap(button.dataset.filter);
-  });
+document.addEventListener("click", (event) => {
+  const success = event.target.closest("[data-success]");
+  if (success) showSuccess(success.dataset.success);
 });
 
-qsa(".map-pin").forEach((pin) => {
-  pin.addEventListener("click", () => {
-    qs("#mapHint").textContent = `${pin.dataset.name} sélectionné. Ouvre la fiche pour voir records, joueurs et événements.`;
-  });
+qs("#openMessages").addEventListener("click", () => {
+  qs("#messageDrawer").classList.add("is-open");
+  qs("#messageDrawer").setAttribute("aria-hidden", "false");
 });
 
-qs("#startSession").addEventListener("click", () => showToast("Séance prête: panier topspin, bloc actif, match libre."));
+qs("#closeMessages").addEventListener("click", () => {
+  qs("#messageDrawer").classList.remove("is-open");
+  qs("#messageDrawer").setAttribute("aria-hidden", "true");
+});
 
-qs("#chatForm").addEventListener("submit", (event) => {
+qs("#messageForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = event.currentTarget.elements.message;
   const text = input.value.trim();
   if (!text) return;
-  messages.push({ text, mine: true });
+  messages.push({ author: "Emma", text, mine: true });
   input.value = "";
   renderMessages();
+  showSuccess("Message envoyé.");
 });
 
-renderActivities();
-renderBadges();
-renderMap();
-renderTraining();
-renderSocial();
-renderCompare();
-
-if ("serviceWorker" in navigator && location.protocol !== "file:") {
-  navigator.serviceWorker.register("sw.js").catch(() => {});
-}
+renderBookings();
+renderPlayers();
+renderLeaderboard();
+renderMessages();

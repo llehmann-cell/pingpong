@@ -1,7 +1,7 @@
 {
   "name": "PinPang Strava",
   "short_name": "PinPang",
-  "description": "Suivi social, sportif et matériel pour joueurs de tennis de table.",
+  "description": "Ping Pang Paris digital club app pour joueurs de tennis de table.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f1ea",
