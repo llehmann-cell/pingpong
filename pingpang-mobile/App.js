@@ -10,6 +10,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import MatchEntryScreen from './screens/MatchEntryScreen';
 import FriendsScreen from './screens/FriendsScreen';
 import RankingScreen from './screens/RankingScreen';
+import ClubsScreen from './screens/ClubsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -122,6 +123,20 @@ function MainTabs() {
           tabBarIcon: ({ focused }) => <TabIcon emoji="🤝" focused={focused} />,
           headerShown: true,
           headerTitle: 'Mes Amis',
+          headerStyle: { backgroundColor: '#0f0f0f' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold', letterSpacing: 0.5 },
+          headerShadowVisible: false,
+        }}
+      />
+      <Tab.Screen
+        name="ClubsTab"
+        component={ClubsScreen}
+        options={{
+          tabBarLabel: 'Clubs',
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🏟️" focused={focused} />,
+          headerShown: true,
+          headerTitle: 'Clubs',
           headerStyle: { backgroundColor: '#0f0f0f' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold', letterSpacing: 0.5 },

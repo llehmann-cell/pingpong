@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 from jose import JWTError, jwt
 import bcrypt
 
-from database import SessionLocal, Player, Match, Friendship, engine, Base
+from database import SessionLocal, Player, Match, Friendship, Club, ClubMember, engine, Base
 import redis
 from main_backup import task_update_ranking
 
@@ -81,6 +81,10 @@ class UserResponse(BaseModel):
     vol: float
     is_admin: bool
     country_id: Optional[int] = None
+    club_id: Optional[int] = None
+    club_name: Optional[str] = None
+    club_role: Optional[str] = None
+    pending_club_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -132,6 +136,37 @@ class FriendshipResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class ClubCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ClubResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    owner_id: int
+    created_at: datetime
+    members_count: int = 0
+
+    class Config:
+        from_attributes = True
+
+class ClubRequestResponse(BaseModel):
+    id: int
+    player_id: int
+    player_pseudo: str
+    joined_at: datetime
+
+class ClubMemberResponse(BaseModel):
+    id: int
+    player_id: int
+    player_pseudo: str
+    role: str
+    joined_at: datetime
+
+class RoleUpdate(BaseModel):
+    role: str
 
 # --- AUTHENTICATION ---
 
@@ -444,6 +479,227 @@ def search_players(q: str = "", db: Session = Depends(get_db)):
     return players
 
 
+# --- CLUBS ---
+
+@app.post("/clubs", response_model=ClubResponse)
+def create_club(club: ClubCreate, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous appartenez déjà à un club")
+    
+    existing = db.query(Club).filter(Club.name.ilike(club.name)).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Un club avec ce nom existe déjà")
+    
+    new_club = Club(name=club.name, description=club.description, owner_id=current_user.id)
+    db.add(new_club)
+    db.commit()
+    db.refresh(new_club)
+    
+    membership = ClubMember(club_id=new_club.id, player_id=current_user.id, role="owner", status="accepted")
+    db.add(membership)
+    db.commit()
+    
+    # Reload user to update relationships if needed
+    db.refresh(current_user)
+    new_club.members_count = 1
+    return new_club
+
+@app.get("/clubs", response_model=List[ClubResponse])
+def search_clubs(q: str = "", db: Session = Depends(get_db)):
+    clubs = db.query(Club).filter(Club.name.ilike(f"%{q}%")).limit(20).all()
+    for club in clubs:
+        club.members_count = db.query(ClubMember).filter(ClubMember.club_id == club.id, ClubMember.status == "accepted").count()
+    return clubs
+
+@app.post("/clubs/{club_id}/join")
+def join_club(club_id: int, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous appartenez déjà à un club")
+        
+    club = db.query(Club).filter(Club.id == club_id).first()
+    if not club:
+        raise HTTPException(status_code=404, detail="Club introuvable")
+        
+    existing_request = db.query(ClubMember).filter(
+        ClubMember.player_id == current_user.id,
+        ClubMember.club_id == club_id,
+        ClubMember.status == "pending"
+    ).first()
+    if existing_request:
+        raise HTTPException(status_code=400, detail="Vous avez déjà une demande en attente pour ce club")
+
+    if current_user.pending_club_id:
+        raise HTTPException(status_code=400, detail="Vous avez déjà une demande en attente pour un autre club. Veuillez l'annuler avant.")
+        
+    membership = ClubMember(club_id=club_id, player_id=current_user.id, role="member", status="pending")
+    db.add(membership)
+    db.commit()
+    
+    return {"status": "success", "message": f"Demande envoyée au club {club.name}"}
+
+@app.get("/clubs/requests", response_model=List[ClubRequestResponse])
+def get_club_requests(current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id or current_user.club_role not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Non autorisé à gérer les requêtes de ce club")
+        
+    requests = db.query(ClubMember).filter(
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "pending"
+    ).all()
+    
+    result = []
+    for req in requests:
+        player = db.query(Player).filter(Player.id == req.player_id).first()
+        if player:
+            result.append(ClubRequestResponse(
+                id=req.id,
+                player_id=player.id,
+                player_pseudo=player.pseudo,
+                joined_at=req.joined_at
+            ))
+    return result
+
+@app.patch("/clubs/requests/{membership_id}/accept")
+def accept_club_request(membership_id: int, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id or current_user.club_role not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Non autorisé à gérer les requêtes")
+        
+    membership = db.query(ClubMember).filter(
+        ClubMember.id == membership_id,
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "pending"
+    ).first()
+    
+    if not membership:
+        raise HTTPException(status_code=404, detail="Requête introuvable")
+        
+    # Check if user already joined another club in the meantime
+    player = db.query(Player).filter(Player.id == membership.player_id).first()
+    if player and player.club_id:
+        db.delete(membership)
+        db.commit()
+        raise HTTPException(status_code=400, detail="Ce joueur a déjà rejoint un autre club.")
+        
+    membership.status = "accepted"
+    
+    # Delete any other pending requests for this player
+    db.query(ClubMember).filter(
+        ClubMember.player_id == membership.player_id,
+        ClubMember.status == "pending",
+        ClubMember.id != membership_id
+    ).delete()
+    
+    db.commit()
+    return {"status": "success", "message": "Joueur accepté dans le club"}
+
+@app.patch("/clubs/requests/{membership_id}/reject")
+def reject_club_request(membership_id: int, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id or current_user.club_role not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Non autorisé à gérer les requêtes")
+        
+    membership = db.query(ClubMember).filter(
+        ClubMember.id == membership_id,
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "pending"
+    ).first()
+    
+    if not membership:
+        raise HTTPException(status_code=404, detail="Requête introuvable")
+        
+    db.delete(membership)
+    db.commit()
+    return {"status": "success", "message": "Requête refusée"}
+
+@app.get("/clubs/members", response_model=List[ClubMemberResponse])
+def get_club_members(current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous n'êtes pas dans un club")
+        
+    memberships = db.query(ClubMember).filter(
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "accepted"
+    ).all()
+    
+    result = []
+    for mem in memberships:
+        player = db.query(Player).filter(Player.id == mem.player_id).first()
+        if player:
+            result.append(ClubMemberResponse(
+                id=mem.id,
+                player_id=player.id,
+                player_pseudo=player.pseudo,
+                role=mem.role,
+                joined_at=mem.joined_at
+            ))
+    return result
+
+@app.delete("/clubs/members/{membership_id}")
+def kick_club_member(membership_id: int, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id or current_user.club_role not in ["owner", "admin"]:
+        raise HTTPException(status_code=403, detail="Non autorisé")
+        
+    membership = db.query(ClubMember).filter(
+        ClubMember.id == membership_id,
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "accepted"
+    ).first()
+    
+    if not membership:
+        raise HTTPException(status_code=404, detail="Membre introuvable")
+        
+    if membership.role == "owner":
+        raise HTTPException(status_code=400, detail="Impossible d'exclure le propriétaire")
+        
+    if current_user.club_role == "admin" and membership.role == "admin":
+        raise HTTPException(status_code=403, detail="Un officier ne peut pas exclure un autre officier")
+        
+    db.delete(membership)
+    db.commit()
+    return {"status": "success", "message": "Membre exclu"}
+
+@app.patch("/clubs/members/{membership_id}/role")
+def update_member_role(membership_id: int, update: RoleUpdate, current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id or current_user.club_role != "owner":
+        raise HTTPException(status_code=403, detail="Seul le propriétaire peut gérer les rôles")
+        
+    if update.role not in ["admin", "member"]:
+        raise HTTPException(status_code=400, detail="Rôle invalide")
+        
+    membership = db.query(ClubMember).filter(
+        ClubMember.id == membership_id,
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "accepted"
+    ).first()
+    
+    if not membership:
+        raise HTTPException(status_code=404, detail="Membre introuvable")
+        
+    if membership.role == "owner":
+        raise HTTPException(status_code=400, detail="Le rôle du propriétaire ne peut pas être modifié ici")
+        
+    membership.role = update.role
+    db.commit()
+    return {"status": "success", "message": "Rôle mis à jour"}
+
+@app.post("/clubs/leave")
+def leave_club(current_user: Player = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous n'appartenez à aucun club")
+        
+    membership = db.query(ClubMember).filter(
+        ClubMember.player_id == current_user.id,
+        ClubMember.status == "accepted"
+    ).first()
+    
+    if membership:
+        db.delete(membership)
+        # If owner leaves, maybe reassign or delete club, but let's keep it simple: just delete membership.
+        # If last member, delete club? Simple approach: just leave.
+        db.commit()
+        
+    return {"status": "success", "message": "Vous avez quitté le club"}
+
+
 # --- RANKING ---
 
 from database import Country
@@ -485,6 +741,36 @@ def get_country_ranking(
     players = (
         db.query(Player)
         .filter(Player.country_id == country_id)
+        .order_by(Player.r.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return [
+        RankingEntry(rank=offset + i + 1, id=p.id, pseudo=p.pseudo, r=p.r, rd=p.rd, country_id=p.country_id)
+        for i, p in enumerate(players)
+    ]
+
+
+@app.get("/ranking/club", response_model=List[RankingEntry])
+def get_club_ranking(
+    limit: int = 100,
+    offset: int = 0,
+    current_user: Player = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Classement interne pour le club du joueur."""
+    if not current_user.club_id:
+        raise HTTPException(status_code=400, detail="Vous n'êtes pas dans un club")
+        
+    club_members_ids = db.query(ClubMember.player_id).filter(
+        ClubMember.club_id == current_user.club_id,
+        ClubMember.status == "accepted"
+    ).subquery()
+    
+    players = (
+        db.query(Player)
+        .filter(Player.id.in_(club_members_ids))
         .order_by(Player.r.desc())
         .offset(offset)
         .limit(limit)

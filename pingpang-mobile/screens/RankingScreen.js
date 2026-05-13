@@ -39,14 +39,15 @@ function PlayerRow({ item, isMe }) {
 // Écran principal
 // ──────────────────────────────────────────
 export default function RankingScreen() {
-  const [tab, setTab] = useState('world'); // 'world' | 'national'
+  const [tab, setTab] = useState('world'); // 'world' | 'national' | 'club'
   const [ranking, setRanking] = useState([]);
   const [myRank, setMyRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Mon pays (depuis le profil)
+  // Mon pays / club (depuis le profil)
   const [myCountry, setMyCountry] = useState(null);
+  const [myClubId, setMyClubId] = useState(null);
 
   // Recherche de pays
   const [countryQuery, setCountryQuery] = useState('');
@@ -55,30 +56,41 @@ export default function RankingScreen() {
   const [showCountryModal, setShowCountryModal] = useState(false);
   const [countryLoading, setCountryLoading] = useState(false);
 
-  // ── Charger le pays du profil connecté ────────
+  // ── Charger les infos du profil connecté ────────
   useEffect(() => {
-    const loadMyCountry = async () => {
+    const loadMyInfo = async () => {
       try {
         const meRes = await api.get('/me');
+        setMyClubId(meRes.data?.club_id);
         const countryId = meRes.data?.country_id;
         if (countryId) {
           const cRes = await api.get(`/countries/${countryId}`);
           setMyCountry(cRes.data);
         }
       } catch (e) {
-        // pas de pays défini ou non connecté
+        // pas défini ou non connecté
       }
     };
-    loadMyCountry();
+    loadMyInfo();
   }, []);
 
   // ── Chargement du classement ───────────────
   const fetchRanking = useCallback(async (force = false) => {
+    if (tab === 'club' && !myClubId) {
+      setRanking([]);
+      setMyRank(null);
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     if (!force) setLoading(true);
     try {
       let endpoint = '/ranking';
       if (tab === 'national' && selectedCountry) {
         endpoint = `/ranking/country/${selectedCountry.id}`;
+      } else if (tab === 'club') {
+        endpoint = '/ranking/club';
       }
       const [rankRes, meRes] = await Promise.all([
         api.get(endpoint),
@@ -88,11 +100,12 @@ export default function RankingScreen() {
       setMyRank(meRes.data);
     } catch (e) {
       console.error('Ranking fetch error', e);
+      setRanking([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [tab, selectedCountry]);
+  }, [tab, selectedCountry, myClubId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -155,6 +168,12 @@ export default function RankingScreen() {
         >
           <Text style={[styles.tabText, tab === 'national' && styles.tabTextActive]}>🏳️ NATIONAL</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, tab === 'club' && styles.tabActive]}
+          onPress={() => { setTab('club'); setSelectedCountry(null); }}
+        >
+          <Text style={[styles.tabText, tab === 'club' && styles.tabTextActive]}>🏟️ CLUB</Text>
+        </TouchableOpacity>
       </View>
 
       {/* ── Sélecteur de pays (tab national) ── */}
@@ -187,6 +206,12 @@ export default function RankingScreen() {
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#4fc3f7" />
           <Text style={styles.loadingText}>Chargement du classement…</Text>
+        </View>
+      ) : tab === 'club' && !myClubId ? (
+        <View style={styles.centered}>
+          <Text style={styles.emptyText}>
+            Vous n'appartenez à aucun club. Rejoignez-en un depuis l'onglet "Clubs" !
+          </Text>
         </View>
       ) : ranking.length === 0 ? (
         <View style={styles.centered}>

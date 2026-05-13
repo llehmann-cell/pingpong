@@ -31,6 +31,39 @@ class Player(Base):
     rd = Column(Float, default=350.0)
     vol = Column(Float, default=0.06)
 
+    # Relationships
+    clubs_owned = relationship("Club", back_populates="owner")
+    club_memberships = relationship("ClubMember", back_populates="player")
+
+    @property
+    def club_id(self):
+        for membership in self.club_memberships:
+            if membership.status == "accepted":
+                return membership.club_id
+        return None
+
+    @property
+    def club_name(self):
+        for membership in self.club_memberships:
+            if membership.status == "accepted":
+                if membership.club:
+                    return membership.club.name
+        return None
+
+    @property
+    def club_role(self):
+        for membership in self.club_memberships:
+            if membership.status == "accepted":
+                return membership.role
+        return None
+
+    @property
+    def pending_club_id(self):
+        for membership in self.club_memberships:
+            if membership.status == "pending":
+                return membership.club_id
+        return None
+
 class Match(Base):
     __tablename__ = "matches"
     
@@ -49,6 +82,31 @@ class Friendship(Base):
     user_id = Column(Integer, ForeignKey("players.id"))
     friend_id = Column(Integer, ForeignKey("players.id"))
     status = Column(String, default="pending") # pending, accepted
+
+class Club(Base):
+    __tablename__ = "clubs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    description = Column(String, nullable=True)
+    owner_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("Player", back_populates="clubs_owned")
+    members = relationship("ClubMember", back_populates="club")
+
+class ClubMember(Base):
+    __tablename__ = "club_members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    club_id = Column(Integer, ForeignKey("clubs.id"), nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    role = Column(String, default="member") # owner, admin, member
+    status = Column(String, default="pending") # pending, accepted
+    joined_at = Column(DateTime, default=datetime.utcnow)
+
+    club = relationship("Club", back_populates="members")
+    player = relationship("Player", back_populates="club_memberships")
 
 def get_db():
     db = SessionLocal()
