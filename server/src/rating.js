@@ -71,8 +71,20 @@ export function computeGlicko2({
   const newPhi = 1 / Math.sqrt(1 / phiStar ** 2 + 1 / variance);
   const newMu = mu + newPhi ** 2 * g(opponentPhi) * (score - expectation);
 
+  let newRating = Math.round(newMu * SCALE_FACTOR + 1500);
+  const oldRating = rating;
+  let ratingDelta = newRating - oldRating;
+
+  // Progressive damping above 2500 Elo to make reaching 3000 Elo extremely difficult.
+  // Gaining points becomes harder and harder, while losses remain fully deducted.
+  if (ratingDelta > 0 && oldRating > 2500) {
+    const compression = Math.max(0.01, 1 - (oldRating - 2500) / (3000 - 2500));
+    ratingDelta = Math.round(ratingDelta * compression);
+    newRating = oldRating + ratingDelta;
+  }
+
   return {
-    rating: Math.round(newMu * SCALE_FACTOR + 1500),
+    rating: newRating,
     ratingDeviation: Math.round(newPhi * SCALE_FACTOR),
     volatility: newVolatility,
   };

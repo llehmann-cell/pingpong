@@ -31,7 +31,7 @@ try {
   if ((Test-Path "server/.env") -or $env:DATABASE_URL) {
     Write-Host "Starting API on http://${HostName}:${ApiPort}"
     $env:PORT = $ApiPort
-    $BackendProcess = Start-Process npm `
+    $BackendProcess = Start-Process npm.cmd `
       -ArgumentList @("--prefix", "server", "run", "dev") `
       -NoNewWindow `
       -PassThru `
