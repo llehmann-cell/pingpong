@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-celery
-redis
-numba
-sqlalchemy
-psycopg2-binary
