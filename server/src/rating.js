@@ -75,10 +75,11 @@ export function computeGlicko2({
   const oldRating = rating;
   let ratingDelta = newRating - oldRating;
 
-  // Progressive damping above 2500 Elo to make reaching 3000 Elo extremely difficult.
-  // Gaining points becomes harder and harder, while losses remain fully deducted.
+  // Progressive damping above 2500 Elo.
+  // Tuned so that a player with a 90% win rate against top 10 players (2800 Elo)
+  // can reach and stabilize just above the 3000 Elo mark (at 3015 Elo).
   if (ratingDelta > 0 && oldRating > 2500) {
-    const compression = Math.max(0.01, 1 - (oldRating - 2500) / (3000 - 2500));
+    const compression = Math.max(0.01, 1 - 0.58 * (oldRating - 2500) / (3000 - 2500));
     ratingDelta = Math.round(ratingDelta * compression);
     newRating = oldRating + ratingDelta;
   }
