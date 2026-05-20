@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
+    "start": "bash run-local.sh",
+    "preview": "bash run-local.sh",
+    "preview:expo": "WEB_MODE=expo bash run-local.sh",
+    "expo:start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",

@@ -10,7 +10,7 @@
     <title>Ping Pang Paris</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=shop-1" />
+    <link rel="stylesheet" href="styles.css?v=main-sync-2" />
   </head>
   <body>
     <div class="app">
@@ -20,6 +20,7 @@
           <strong>Ping Pang Paris</strong>
           <span id="viewSubtitle">Accueil</span>
         </div>
+        <div class="sync-status" id="apiStatus" title="Statut backend main">Local mode</div>
         <nav class="desktop-nav" aria-label="Navigation desktop">
           <button class="is-active" data-view="home" type="button">Accueil</button>
           <button data-view="booking" type="button">Réserver</button>
@@ -44,7 +45,7 @@
             <div>
               <p class="eyebrow">Aujourd'hui à Paris</p>
               <h1>Joue, réserve, progresse.</h1>
-              <p>Ton club, tes matchs et ta progression dans une seule app.</p>
+              <p>Map live, scorer, ranking PPR, feed social et backend main dans la DA Ping Pang.</p>
             </div>
             <button class="primary-action" type="button" data-view="booking">Réserver</button>
           </div>
@@ -65,24 +66,24 @@
 
           <div class="home-grid">
             <article class="simple-card" data-view="booking">
-              <span>16:30</span>
-              <strong>3 tables disponibles</strong>
-              <p>Table 1, 2 ou 4 • hors peak</p>
+              <span>Map live</span>
+              <strong>3 tables autour de Paris</strong>
+              <p>OpenStreetMap • local legends</p>
             </article>
             <article class="simple-card" data-view="social">
-              <span>Matching</span>
-              <strong>4 joueurs compatibles</strong>
-              <p>Paris • niveau 1300-1600</p>
+              <span>Scorer</span>
+              <strong>Match room + review</strong>
+              <p>Points, drills, notes adversaires</p>
             </article>
             <article class="simple-card" data-view="profile">
-              <span>Dernière perf</span>
-              <strong>Topspin 84 km/h</strong>
-              <p>540 coups • endurance 78%</p>
+              <span>Gear</span>
+              <strong>Scan revêtement</strong>
+              <p>183/200 h • Garmin / Apple / Strava</p>
             </article>
             <article class="simple-card" data-view="challenges">
-              <span>Challenge</span>
-              <strong>Top 10 cette semaine</strong>
-              <p>Plus que 220 XP à gagner</p>
+              <span>Ranking</span>
+              <strong>1842 PPR</strong>
+              <p>Classement, badges, pending matches</p>
             </article>
             <article class="simple-card has-dot" data-view="shop">
               <span>Shop</span>
@@ -90,9 +91,55 @@
               <p>Fiber short, hoodie et Icons collection</p>
             </article>
           </div>
+
+          <section class="main-registry-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Back main synchronisé</p>
+                <h2>Auth, players, tables, matches, Glicko-2</h2>
+              </div>
+              <span class="xp-pill">API ready</span>
+            </div>
+            <div class="registry-grid" id="registryGrid"></div>
+          </section>
+
+          <section class="activity-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Live club graph</p>
+                <h2>Activité de ton cercle</h2>
+              </div>
+              <button class="primary-action small-action" type="button" data-view="social">Jouer</button>
+            </div>
+            <div id="activityFeed"></div>
+          </section>
+
+          <section class="coach-card">
+            <div>
+              <p class="eyebrow">Aura coach</p>
+              <h2>Le prochain bloc: réception service court</h2>
+              <p>Ton dernier match a montré deux attaques ratées sur troisième balle. Le plan du soir garde l'ouverture plus simple.</p>
+            </div>
+            <button class="primary-action" type="button" data-success="Bloc coach ajouté à ta séance.">Ajouter</button>
+          </section>
         </section>
 
         <section class="screen" id="booking">
+          <section class="map-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">OpenStreetMap</p>
+                <h1>Tables autour de Paris.</h1>
+              </div>
+              <span class="xp-pill">Live</span>
+            </div>
+            <div class="real-map" id="realMap" aria-label="Carte des tables Ping Pang Paris"></div>
+          </section>
+
+          <section class="selected-spot-card">
+            <div id="selectedSpot"></div>
+          </section>
+
           <div class="tabs">
             <button class="is-active" type="button">Tables</button>
             <button type="button">Événements</button>
@@ -123,6 +170,12 @@
             </div>
             <button class="primary-action" type="button" data-success="Inscription Happy Hours confirmée.">Participer</button>
           </section>
+
+          <section class="table-network-card">
+            <p class="eyebrow">Clubs & tables du réseau</p>
+            <h2>Local legends</h2>
+            <div id="tableNetwork"></div>
+          </section>
         </section>
 
         <section class="screen" id="social">
@@ -133,7 +186,35 @@
             </div>
             <button class="icon-button" type="button" aria-label="Filtres">≡</button>
           </div>
+          <section class="scorer-card">
+            <div>
+              <p class="eyebrow">Match room</p>
+              <h2>Score maintenant, review après.</h2>
+            </div>
+            <div class="score-board" id="scoreBoard"></div>
+            <div class="score-actions">
+              <button type="button" data-score="you">+ toi</button>
+              <button type="button" data-score="them">+ rival</button>
+              <button type="button" data-save-match="win">Save win</button>
+              <button type="button" data-reset-score>Reset</button>
+            </div>
+          </section>
           <div class="player-list" id="playerList"></div>
+          <section class="drill-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Coach</p>
+                <h2>Tonight's block</h2>
+              </div>
+              <span class="xp-pill" id="drillCount">0/4</span>
+            </div>
+            <div id="drillList"></div>
+          </section>
+          <section class="opponent-notes-card">
+            <p class="eyebrow">Notes adversaires</p>
+            <h2>Ce que main ajoute au matching</h2>
+            <div id="opponentNotes"></div>
+          </section>
         </section>
 
         <section class="screen" id="profile">
@@ -173,6 +254,30 @@
               <li><strong>Endurance:</strong> ajouter 2 séances courtes pour passer de 78% à 84%.</li>
               <li><strong>Vitesse:</strong> travailler l'accélération poignet sur 3 séries de 50 coups.</li>
             </ul>
+          </section>
+
+          <section class="gear-card">
+            <p class="eyebrow">Gear tracking</p>
+            <h2>Matériel connecté</h2>
+            <div id="gearSignals"></div>
+          </section>
+
+          <section class="rubber-card">
+            <div class="racket-art">
+              <span></span>
+            </div>
+            <div>
+              <p class="eyebrow">Camera</p>
+              <h2 id="rubberTitle">Photo après entraînement</h2>
+              <p id="rubberText">Compare brillance, bords abîmés et perte de grip avec tes anciennes séances.</p>
+              <button class="primary-action" type="button" id="scanRubber">Scanner le revêtement</button>
+            </div>
+          </section>
+
+          <section class="integration-card">
+            <p class="eyebrow">Connected</p>
+            <h2>Signaux externes</h2>
+            <div id="integrationGrid"></div>
           </section>
         </section>
 
@@ -236,6 +341,21 @@
             <div id="leaderboard"></div>
           </section>
 
+          <section class="ranking-card">
+            <div>
+              <p class="eyebrow">World ranking</p>
+              <h1>1842 PPR</h1>
+              <p>Progression type chess.com pour les vrais matchs: challenge, validation, classement.</p>
+            </div>
+            <div id="rankingTable"></div>
+          </section>
+
+          <section class="pending-card">
+            <p class="eyebrow">Match verification</p>
+            <h2>Résultats à confirmer</h2>
+            <div id="pendingMatches"></div>
+          </section>
+
           <div class="challenge-grid">
             <article class="challenge-card">
               <p class="eyebrow">Perso</p>
@@ -257,6 +377,12 @@
               <li><strong>Challenge perso:</strong> 1 500 coups enregistrés avant dimanche.</li>
               <li><strong>Challenge team:</strong> trouver un duo compatible à plus de 85%.</li>
             </ul>
+          </section>
+
+          <section class="badge-card">
+            <p class="eyebrow">Identity</p>
+            <h2>Badges lisibles par tous</h2>
+            <div id="badgeGrid"></div>
           </section>
         </section>
       </main>
@@ -296,6 +422,6 @@
     </aside>
 
     <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=shop-1"></script>
+    <script src="app.js?v=main-sync-2"></script>
   </body>
 </html>
