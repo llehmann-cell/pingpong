@@ -68,7 +68,18 @@ def compute_glicko2_core(r: float, rd: float, vol: float, r_opp: float, rd_opp: 
     new_phi = 1.0 / math.sqrt(1.0 / phi_star**2 + 1.0 / v)
     new_mu = mu + new_phi**2 * g_phi(phi_j) * (score - E_mu(mu, mu_j, phi_j))
 
-    return (new_mu * SCALE_FACTOR + 1500.0), (new_phi * SCALE_FACTOR), new_vol
+    new_rating = new_mu * SCALE_FACTOR + 1500.0
+    rating_delta = new_rating - r
+
+    # Progressive damping above 2500 Elo.
+    # Tuned so that a player with a 90% win rate against top 10 players (2800 Elo)
+    # can reach and stabilize just above the 3000 Elo mark (at 3015 Elo).
+    if rating_delta > 0.0 and r > 2500.0:
+        compression = max(0.01, 1.0 - 0.58 * (r - 2500.0) / (3000.0 - 2500.0))
+        rating_delta *= compression
+        new_rating = r + rating_delta
+
+    return new_rating, (new_phi * SCALE_FACTOR), new_vol
 
 
 @celery_app.task
