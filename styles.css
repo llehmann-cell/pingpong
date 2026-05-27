@@ -1,0 +1,2628 @@
+@font-face {
+  font-family: "Open Sauce One";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("assets/fonts/open-sauce-one-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sauce One";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("assets/fonts/open-sauce-one-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sauce One";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("assets/fonts/open-sauce-one-900.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Open Sauce Two";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url("assets/fonts/open-sauce-two-900.woff2") format("woff2");
+}
+
+:root {
+  --green: #0c3b31;
+  --green-soft: #e9f1ed;
+  --ink: #171717;
+  --muted: #757575;
+  --line: #e2e2de;
+  --paper: #fbfbf7;
+  --panel: #ffffff;
+  --gold: #bf9700;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  max-width: none;
+  margin: 0 auto;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto auto auto auto;
+  align-items: center;
+  gap: 22px;
+  padding: 10px clamp(22px, 4vw, 56px);
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-title {
+  text-align: left;
+}
+
+.header-title strong {
+  display: block;
+  font-size: 20px;
+}
+
+.header-title span {
+  display: block;
+  margin-top: 3px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sync-status {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.sync-status.is-online {
+  border-color: var(--green);
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.desktop-nav button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  padding: 0 14px;
+  font-weight: 800;
+}
+
+.desktop-nav .is-active {
+  background: var(--green);
+  color: white;
+}
+
+.back-button {
+  display: none;
+}
+
+.icon-button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 26px;
+  display: grid;
+  place-items: center;
+}
+
+.icon-button.is-active {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.message-button {
+  font-size: 18px;
+}
+
+.message-button em {
+  position: absolute;
+  right: 4px;
+  top: 5px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.screen-wrap {
+  min-height: calc(100vh - 150px);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 34px clamp(22px, 4vw, 56px) 86px;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.is-active {
+  display: block;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(30px, 6vw, 56px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.05;
+}
+
+.home-hero,
+.streak-card,
+.simple-card,
+.event-card,
+.profile-card,
+.performance-post,
+.leaderboard-card,
+.challenge-card {
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.home-hero {
+  min-height: 320px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle at 85% 28%, #d5b344 0 18px, transparent 19px),
+    linear-gradient(135deg, var(--green), #082820);
+  color: white;
+}
+
+.home-hero .eyebrow,
+.home-hero p {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.primary-action {
+  min-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: white;
+  padding: 0 20px;
+  font-weight: 800;
+}
+
+.streak-card,
+.performance-post,
+.leaderboard-card {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+.card-head,
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.xp-pill {
+  flex: none;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ball-streak {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.ball-streak span {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: #f2f2ee;
+}
+
+.ball-streak .is-done {
+  background: radial-gradient(circle at 35% 30%, white 0 18%, #f7f0d0 19% 100%);
+  border-color: var(--gold);
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.simple-card {
+  border: 0;
+  padding: 16px;
+  text-align: left;
+  display: grid;
+  gap: 5px;
+  width: 100%;
+}
+
+.simple-card span,
+.booking-row span,
+.player-row span,
+.profile-card p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.simple-card strong {
+  font-size: 18px;
+}
+
+.tabs,
+.date-row,
+.filter-row {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.tabs {
+  margin: -18px -18px 0;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.tabs button {
+  flex: 1;
+  min-height: 52px;
+  border: 0;
+  border-bottom: 5px solid transparent;
+  background: transparent;
+  font-weight: 700;
+}
+
+.tabs .is-active {
+  border-bottom-color: var(--gold);
+}
+
+.date-row {
+  margin: 0 -18px;
+  padding: 12px 18px;
+  gap: 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.date-row button,
+.filter-row button {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.date-row .is-active {
+  color: var(--ink);
+}
+
+.filter-row {
+  margin: 0 -18px 0;
+  padding: 10px 18px;
+  gap: 9px;
+  background: var(--green);
+  color: white;
+}
+
+.filter-row span {
+  font-size: 13px;
+}
+
+.filter-row button {
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  padding: 7px 12px;
+}
+
+.booking-list {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.booking-row {
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: 82px 1fr 36px;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.booking-row em {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 3px 5px;
+  background: var(--green);
+  color: white;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.booking-row button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.booking-row.is-reserved {
+  background: var(--green-soft);
+}
+
+.booking-row button.is-reserved {
+  border-color: var(--green);
+  background: radial-gradient(circle at center, var(--green) 0 45%, transparent 47%);
+}
+
+.reservation-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.reservation-row:last-child {
+  border-bottom: 0;
+}
+
+.reservation-row p,
+.empty-reservation {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.reservation-row button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  padding: 0 12px;
+  font-weight: 900;
+}
+
+.event-card {
+  margin-top: 14px;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.event-card span {
+  color: var(--muted);
+}
+
+.booking-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.booking-side {
+  display: grid;
+  gap: 12px;
+  align-self: start;
+}
+
+.section-title {
+  margin-bottom: 14px;
+}
+
+.player-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 58px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-weight: 900;
+}
+
+.avatar.small {
+  width: 48px;
+  height: 48px;
+  font-size: 14px;
+}
+
+.player-row button {
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 900;
+}
+
+.profile-card {
+  padding: 24px 18px;
+  text-align: center;
+}
+
+.profile-card .avatar {
+  margin: 0 auto 14px;
+}
+
+.profile-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.profile-counts span,
+.metrics-grid span {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-counts strong,
+.metrics-grid strong {
+  color: var(--ink);
+  font-size: 22px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.metrics-grid span {
+  min-height: 78px;
+  border-radius: 12px;
+  background: var(--green-soft);
+  padding: 14px;
+}
+
+.leader-row {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.leader-row:last-child {
+  border-bottom: 0;
+}
+
+.leader-row span {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.leader-row em {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 13px;
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.challenge-card {
+  padding: 18px;
+}
+
+.progress {
+  height: 9px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  overflow: hidden;
+  margin-top: 18px;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--green);
+}
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 25;
+  transform: translateX(-50%);
+  width: min(1180px, 100%);
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+}
+
+.bottom-nav button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+}
+
+.bottom-nav span {
+  font-size: 24px;
+}
+
+.bottom-nav .is-active {
+  color: var(--green);
+  box-shadow: inset 0 4px 0 var(--green);
+}
+
+.message-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 60;
+  width: min(390px, 100%);
+  background: var(--panel);
+  transform: translateX(100%);
+  transition: transform 180ms ease;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+}
+
+.message-drawer.is-open {
+  transform: translateX(0);
+}
+
+.drawer-head {
+  min-height: 74px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.message-list {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 82%;
+  border-radius: 14px;
+  background: var(--green-soft);
+  padding: 10px 12px;
+}
+
+.message.mine {
+  align-self: flex-end;
+  background: var(--green);
+  color: white;
+}
+
+.message p {
+  margin-top: 4px;
+}
+
+.message-form {
+  display: grid;
+  grid-template-columns: 1fr 46px;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.message-form input {
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 14px;
+}
+
+.message-form button {
+  border: 0;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+}
+
+.success-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  z-index: 70;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  width: min(360px, calc(100% - 32px));
+  border-radius: 14px;
+  background: var(--ink);
+  color: white;
+  padding: 13px 14px;
+  text-align: center;
+  transition: 180ms ease;
+}
+
+.success-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (min-width: 860px) {
+  .tabs,
+  .date-row,
+  .filter-row {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 14px;
+  }
+}
+
+@media (min-width: 900px) {
+  #home.screen.is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  #home .home-hero {
+    grid-row: span 2;
+  }
+
+  #home .streak-card {
+    margin-top: 0;
+  }
+
+  #home .home-grid {
+    grid-column: 1 / -1;
+  }
+
+  #home .main-registry-card {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  #home .activity-card,
+  #home .coach-card {
+    grid-column: 1 / -1;
+  }
+
+  #booking.screen.is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  #booking .tabs,
+  #booking .date-row,
+  #booking .filter-row,
+  #booking .booking-list,
+  #booking .booking-controls,
+  #booking .map-card,
+  #booking .selected-spot-card {
+    grid-column: 1;
+  }
+
+  #booking .event-card {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+    position: sticky;
+    top: 104px;
+  }
+
+  #booking .table-network-card {
+    grid-column: 2;
+    grid-row: 5 / span 2;
+  }
+
+  #profile.screen.is-active {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  #profile .performance-post {
+    margin-top: 0;
+  }
+
+  #challenges.screen.is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 18px;
+  }
+
+  #challenges .section-title {
+    grid-column: 1 / -1;
+  }
+
+  #challenges .challenge-grid {
+    margin-top: 0;
+  }
+
+  #challenges .ranking-card,
+  #challenges .badge-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: #222;
+  }
+
+  .app {
+    max-width: 430px;
+  }
+
+  .app-header {
+    min-height: 74px;
+    grid-template-columns: 40px 1fr 40px 40px;
+    gap: 8px;
+    padding: 8px 18px;
+  }
+
+  .back-button {
+    display: grid;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .sync-status {
+    display: none;
+  }
+
+  .header-title {
+    text-align: center;
+  }
+
+  .screen-wrap {
+    padding: 18px 18px 96px;
+  }
+
+  .home-hero {
+    min-height: 250px;
+  }
+
+  .home-grid,
+  .player-list,
+  .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-list {
+    margin: 0 -18px;
+    border-radius: 0;
+  }
+
+  .bottom-nav {
+    display: grid;
+  }
+}
+
+/* Shop and notification layer */
+:root {
+  --font-heading: "Open Sauce Two", "Open Sauce One", Arial, Helvetica, sans-serif;
+  --font-body: "Open Sauce One", Arial, Helvetica, sans-serif;
+  --radius: 10px;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+.header-title strong,
+.simple-card strong {
+  font-family: var(--font-heading);
+  font-weight: 900;
+}
+
+.message-button em,
+.cart-button em {
+  position: absolute;
+  right: 4px;
+  top: 5px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.cart-button {
+  font-size: 17px;
+}
+
+.has-dot {
+  position: relative;
+}
+
+.has-dot::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0bd36a;
+  box-shadow: 0 0 0 3px rgba(11, 211, 106, 0.2);
+}
+
+.desktop-nav .has-dot::after,
+.bottom-nav .has-dot::after,
+.simple-card.has-dot::after {
+  right: 8px;
+  top: 8px;
+}
+
+.home-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.bottom-nav {
+  display: none;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.message-drawer,
+.cart-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 60;
+  width: min(390px, 100%);
+  background: var(--panel);
+  transform: translateX(100%);
+  transition: transform 180ms ease;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+}
+
+.message-drawer.is-open,
+.cart-drawer.is-open {
+  transform: translateX(0);
+}
+
+.message-list,
+.cart-list {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
+.shop-tabs button {
+  flex: none;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink);
+  padding: 0 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.shop-tabs .is-active {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+
+.shop-highlight {
+  min-height: 220px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 88% 18%, #c6e8b8 0 44px, transparent 45px),
+    linear-gradient(135deg, #101918, var(--green));
+  color: white;
+  padding: clamp(22px, 4vw, 44px);
+  display: grid;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.shop-highlight h2 {
+  max-width: 560px;
+  color: white;
+  font-size: clamp(30px, 4vw, 56px);
+}
+
+.shop-highlight p:not(.eyebrow) {
+  max-width: 560px;
+  color: rgba(255, 255, 255, 0.76);
+  margin-top: 8px;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.performance-editorial {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.performance-editorial article {
+  position: relative;
+  min-height: 280px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #eeede7;
+}
+
+.performance-editorial img {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.performance-editorial div {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  border-radius: 8px;
+  background: rgba(248, 249, 245, 0.92);
+  padding: 12px;
+}
+
+.performance-editorial h2 {
+  font-size: 18px;
+}
+
+.main-registry-card,
+.table-network-card,
+.my-reservations-card,
+.opponent-notes-card,
+.gear-card,
+.pending-card,
+.activity-card,
+.coach-card,
+.map-card,
+.selected-spot-card,
+.scorer-card,
+.drill-card,
+.rubber-card,
+.integration-card,
+.ranking-card,
+.badge-card {
+  margin-top: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.registry-grid,
+#gearSignals,
+.spot-grid,
+#integrationGrid,
+#badgeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.registry-grid article,
+.gear-signal,
+.spot-grid span,
+#integrationGrid article,
+#badgeGrid article {
+  border-radius: 10px;
+  background: var(--green-soft);
+  padding: 12px;
+  display: grid;
+  gap: 5px;
+}
+
+.registry-grid span,
+.gear-signal span,
+.spot-grid span,
+#integrationGrid span,
+#badgeGrid span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.registry-grid strong,
+.gear-signal strong,
+.spot-grid strong,
+#integrationGrid strong,
+#badgeGrid strong {
+  color: var(--green);
+}
+
+.registry-grid p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.table-spot,
+.note-row,
+.pending-row,
+.feed-row,
+.rank-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.table-spot:last-child,
+.note-row:last-child,
+.pending-row:last-child,
+.feed-row:last-child,
+.rank-row:last-child {
+  border-bottom: 0;
+}
+
+.table-spot p,
+.note-row p,
+.pending-row p,
+.feed-row p,
+.rank-row p {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.table-spot span,
+.note-row span {
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  padding: 7px 9px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.pending-row button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green);
+  color: white;
+  padding: 0 12px;
+  font-weight: 900;
+}
+
+.small-action {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.coach-card {
+  background: var(--green);
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.coach-card .eyebrow,
+.coach-card p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.coach-card .primary-action {
+  background: white;
+  color: var(--green);
+}
+
+.feed-row {
+  grid-template-columns: 42px 1fr auto;
+}
+
+.feed-row > span,
+.rank-row > span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-weight: 900;
+}
+
+.feed-row em,
+.rank-row em {
+  color: var(--green);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.real-map {
+  position: relative;
+  min-height: clamp(300px, 48vw, 520px);
+  overflow: hidden;
+  border-radius: 14px;
+  margin-top: 16px;
+  background:
+    linear-gradient(90deg, rgba(12, 59, 49, 0.14) 1px, transparent 1px),
+    linear-gradient(rgba(12, 59, 49, 0.14) 1px, transparent 1px),
+    #e7ebe3;
+  background-size: 54px 54px;
+  border: 1px solid var(--line);
+}
+
+.tile-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  opacity: 0.88;
+}
+
+.tile-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-wash {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(251, 251, 247, 0.1), rgba(12, 59, 49, 0.2)),
+    radial-gradient(circle at 75% 25%, rgba(191, 151, 0, 0.22), transparent 24%);
+  pointer-events: none;
+}
+
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+}
+
+.map-pin.is-active {
+  width: 52px;
+  height: 52px;
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.map-attribution {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  z-index: 2;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--muted);
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.selected-spot-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.selected-spot-card .spot-grid {
+  grid-column: 1 / -1;
+}
+
+.scorer-card {
+  background: #101010;
+  color: white;
+}
+
+.scorer-card .eyebrow {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.score-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 16px 0;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.score-board article {
+  min-height: 150px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  background: #151515;
+}
+
+.score-board article:last-child {
+  background: var(--green);
+}
+
+.score-board span,
+.score-board p {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.score-board strong {
+  color: white;
+  font-family: var(--font-heading);
+  font-size: clamp(64px, 12vw, 110px);
+  line-height: 0.85;
+}
+
+.score-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.score-actions button,
+.drill-row {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  color: var(--ink);
+  padding: 0 14px;
+  font-weight: 900;
+}
+
+.drill-row {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--green-soft);
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  margin-top: 10px;
+  padding: 12px;
+}
+
+.drill-row span,
+.drill-row em {
+  color: var(--green);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.drill-row p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.drill-row.is-done {
+  background: var(--green);
+  color: white;
+}
+
+.drill-row.is-done span,
+.drill-row.is-done em,
+.drill-row.is-done p {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.ranking-card {
+  background: var(--green);
+  color: white;
+}
+
+.ranking-card .eyebrow,
+.ranking-card p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.rank-row {
+  grid-template-columns: 42px 1fr auto;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.ranking-card .rank-row > span {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.rank-row.is-you {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  padding-inline: 10px;
+}
+
+.rank-row strong,
+.rank-row em {
+  color: white;
+}
+
+.rubber-card {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  background: var(--green);
+  color: white;
+}
+
+.rubber-card .eyebrow,
+.rubber-card p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.rubber-card .primary-action {
+  margin-top: 14px;
+  background: white;
+  color: var(--green);
+}
+
+.racket-art {
+  position: relative;
+  min-height: 160px;
+}
+
+.racket-art::before {
+  content: "";
+  position: absolute;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f5f5f0 0 16%, #ca316f 17% 72%, #ffffff 73% 100%);
+  left: 10px;
+  top: 0;
+}
+
+.racket-art span {
+  position: absolute;
+  width: 42px;
+  height: 110px;
+  border-radius: 999px;
+  background: #171717;
+  transform: rotate(32deg);
+  left: 98px;
+  top: 82px;
+}
+
+#integrationGrid,
+#badgeGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#badgeGrid span,
+#integrationGrid span {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  display: grid;
+  place-items: center;
+}
+
+.gear-signal.amber {
+  background: #f7efd2;
+}
+
+.gear-signal.coral {
+  background: #ffe5dc;
+}
+
+.shop-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.shop-image {
+  aspect-ratio: 4 / 5;
+  background: #efeee9;
+  display: grid;
+  place-items: center;
+}
+
+.shop-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-image.image-fallback::before {
+  content: "PING PANG PARIS";
+  color: var(--green);
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.shop-info {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.shop-info h2 {
+  font-size: 18px;
+}
+
+.shop-info strong {
+  color: var(--green);
+}
+
+.shop-info .primary-action {
+  width: 100%;
+  min-height: 42px;
+}
+
+.cart-row {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-row img {
+  width: 58px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--green-soft);
+}
+
+.cart-row span,
+.empty-cart,
+.cart-footer span {
+  color: var(--muted);
+}
+
+.cart-footer {
+  padding: 16px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+}
+
+.cart-footer div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.improvement-card {
+  margin-top: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.improvement-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.improvement-card li {
+  border-left: 4px solid var(--green);
+  background: var(--green-soft);
+  border-radius: 6px;
+  padding: 11px 12px;
+}
+
+@media (min-width: 900px) {
+  #shop.screen.is-active {
+    display: block;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-grid,
+  .shop-grid,
+  .performance-editorial,
+  .registry-grid,
+  #gearSignals,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .selected-spot-card,
+  .rubber-card,
+  .coach-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .bottom-nav {
+    display: grid;
+  }
+
+  .home-grid,
+  .shop-grid,
+  .performance-editorial,
+  .registry-grid,
+  #gearSignals,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .real-map {
+    min-height: 330px;
+  }
+
+  .score-actions button {
+    flex: 1 1 120px;
+  }
+}
+
+/* App polish layer */
+:root {
+  --app-gap: 14px;
+  --app-radius: 12px;
+  --app-shadow: 0 10px 28px rgba(10, 28, 23, 0.08);
+}
+
+.screen-wrap {
+  max-width: 1220px;
+}
+
+.home-hero,
+.streak-card,
+.simple-card,
+.event-card,
+.profile-card,
+.performance-post,
+.leaderboard-card,
+.challenge-card,
+.main-registry-card,
+.table-network-card,
+.opponent-notes-card,
+.gear-card,
+.pending-card,
+.activity-card,
+.coach-card,
+.map-card,
+.selected-spot-card,
+.scorer-card,
+.drill-card,
+.rubber-card,
+.integration-card,
+.ranking-card,
+.badge-card,
+.improvement-card {
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+}
+
+.map-card,
+.selected-spot-card,
+.event-card,
+.table-network-card,
+.profile-card,
+.performance-post,
+.improvement-card,
+.gear-card,
+.rubber-card,
+.integration-card,
+.leaderboard-card,
+.ranking-card,
+.pending-card,
+.badge-card,
+.challenge-card {
+  margin-top: 0;
+}
+
+.section-title h1,
+.map-card h1,
+.ranking-card h1,
+.profile-card h1 {
+  font-size: clamp(30px, 4.4vw, 52px);
+}
+
+.card-head,
+.section-title {
+  align-items: center;
+}
+
+.real-map {
+  min-height: 410px;
+}
+
+.selected-spot-card {
+  align-self: start;
+}
+
+.selected-spot-card #selectedSpot {
+  display: grid;
+  gap: 14px;
+}
+
+.selected-spot-card .primary-action {
+  width: 100%;
+}
+
+.spot-grid {
+  grid-template-columns: 1fr;
+}
+
+.booking-list {
+  border: 1px solid var(--line);
+  border-radius: var(--app-radius);
+}
+
+.tabs,
+.date-row,
+.filter-row {
+  border: 1px solid var(--line);
+}
+
+.tabs {
+  margin-top: 0;
+}
+
+.filter-row {
+  border-color: var(--green);
+}
+
+.event-card {
+  border: 1px solid var(--line);
+}
+
+.table-network-card {
+  align-self: start;
+}
+
+#profile .profile-card,
+#profile .performance-post,
+#profile .improvement-card,
+#profile .gear-card,
+#profile .rubber-card,
+#profile .integration-card {
+  min-height: 100%;
+}
+
+.profile-card {
+  display: grid;
+  align-content: center;
+}
+
+#profile .profile-card {
+  min-height: 370px;
+}
+
+#profile .performance-post {
+  min-height: 370px;
+}
+
+#profile .improvement-card {
+  min-height: 360px;
+}
+
+#profile .gear-card {
+  min-height: 270px;
+}
+
+#profile .integration-card,
+#profile .rubber-card {
+  min-height: 300px;
+}
+
+#profile .performance-post {
+  display: grid;
+  align-content: space-between;
+}
+
+#profile .performance-post .metrics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#profile .performance-post .metrics-grid span {
+  min-height: 92px;
+}
+
+#profile .gear-card #gearSignals {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 22px;
+}
+
+#profile .gear-card .gear-signal {
+  min-height: 86px;
+}
+
+#profile .improvement-card ul {
+  gap: 12px;
+}
+
+#profile .improvement-card li {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+.metrics-grid,
+#gearSignals,
+#integrationGrid,
+#badgeGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rubber-card {
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+
+.racket-art {
+  min-height: 130px;
+}
+
+.racket-art::before {
+  width: 96px;
+  height: 96px;
+}
+
+.racket-art span {
+  left: 78px;
+  top: 68px;
+  width: 34px;
+  height: 86px;
+}
+
+.ranking-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+#rankingTable {
+  min-width: 0;
+}
+
+.leaderboard-card,
+.pending-card,
+.badge-card {
+  align-self: start;
+}
+
+.challenge-grid {
+  margin-top: 0;
+}
+
+.challenge-card {
+  min-height: 138px;
+  display: grid;
+  align-content: space-between;
+}
+
+#challenges .leaderboard-card,
+#challenges .pending-card,
+#challenges .challenge-card,
+#challenges .challenge-focus,
+#challenges .badge-card {
+  min-height: 0;
+}
+
+#challenges .leaderboard-card .card-head {
+  margin-bottom: 12px;
+}
+
+#challenges .leaderboard-card h2,
+#challenges .pending-card h2,
+#challenges .challenge-card h2,
+#challenges .challenge-focus h2 {
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+#challenges .ranking-card {
+  min-height: 420px;
+  padding: 28px;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(520px, 1.28fr);
+  overflow: hidden;
+}
+
+#challenges .ranking-card h1 {
+  color: white;
+  font-size: clamp(58px, 5vw, 86px);
+  line-height: 0.9;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+#challenges .ranking-card #rankingTable {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+#challenges .ranking-card .rank-row {
+  grid-template-columns: 54px minmax(0, 1fr) 84px;
+  min-height: 72px;
+  padding: 12px 0;
+}
+
+#challenges .ranking-card .rank-row strong,
+#challenges .ranking-card .rank-row p {
+  overflow-wrap: anywhere;
+}
+
+#challenges .ranking-card .rank-row em {
+  justify-self: end;
+}
+
+#challenges .ranking-card .rank-row.is-you {
+  padding: 14px;
+}
+
+#challenges .leaderboard-card,
+#challenges .pending-card {
+  padding: 22px;
+}
+
+#challenges .challenge-card {
+  min-height: 150px;
+  padding: 22px;
+}
+
+#challenges .challenge-card .progress {
+  align-self: end;
+}
+
+#challenges .challenge-focus {
+  padding: 22px;
+}
+
+#challenges .badge-card {
+  padding: 22px;
+}
+
+@media (min-width: 980px) {
+  #booking.screen.is-active {
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+    column-gap: var(--app-gap);
+    row-gap: 12px;
+  }
+
+  #booking .map-card {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #booking .selected-spot-card {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #booking .event-card {
+    grid-column: 2;
+    grid-row: 2;
+    position: static;
+  }
+
+  #booking .table-network-card {
+    grid-column: 2;
+    grid-row: 3 / span 4;
+  }
+
+  #booking .tabs {
+    grid-row: auto;
+  }
+
+  #booking .date-row {
+    grid-row: auto;
+  }
+
+  #booking .filter-row {
+    grid-row: auto;
+  }
+
+  #booking .booking-list {
+    grid-row: auto;
+  }
+
+  #booking .booking-controls {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  #booking .booking-side {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  #booking .booking-side .event-card,
+  #booking .booking-side .table-network-card {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  #profile.screen.is-active {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  #profile .profile-card {
+    grid-column: span 4;
+    grid-row: 1;
+  }
+
+  #profile .performance-post {
+    grid-column: span 8;
+    grid-row: 1;
+  }
+
+  #profile .improvement-card {
+    grid-column: span 4;
+    grid-row: 2;
+  }
+
+  #profile .rubber-card {
+    grid-column: span 6;
+    grid-row: 3;
+  }
+
+  #profile .gear-card {
+    grid-column: span 8;
+    grid-row: 2;
+  }
+
+  #profile .integration-card {
+    grid-column: span 6;
+    grid-row: 3;
+  }
+
+  #challenges.screen.is-active {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--app-gap);
+  }
+
+  #challenges .ranking-card {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  #challenges .leaderboard-card {
+    grid-column: 1 / span 6;
+    grid-row: 1;
+  }
+
+  #challenges .pending-card {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+
+  #challenges .challenge-grid {
+    grid-column: 1 / span 5;
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--app-gap);
+  }
+
+  #challenges .challenge-focus {
+    grid-column: 6 / span 4;
+    grid-row: 3;
+  }
+
+  #challenges .badge-card {
+    grid-column: 10 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 979px) {
+  #booking.screen.is-active,
+  #profile.screen.is-active,
+  #challenges.screen.is-active {
+    display: grid;
+    gap: var(--app-gap);
+  }
+
+  #profile.screen.is-active {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #profile .profile-card,
+  #profile .performance-post,
+  #profile .improvement-card,
+  #profile .gear-card,
+  #profile .rubber-card,
+  #profile .integration-card {
+    grid-column: auto;
+    min-height: 0;
+  }
+
+  #profile .rubber-card {
+    grid-column: 1 / -1;
+  }
+
+  #profile .gear-card #gearSignals {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ranking-card {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .ranking-card {
+    grid-template-columns: 1fr;
+  }
+
+  .real-map {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: var(--paper);
+  }
+
+  .app {
+    max-width: none;
+  }
+
+  .app-header {
+    min-height: 66px;
+    padding: 8px 12px;
+    grid-template-columns: 38px minmax(0, 1fr) 38px 38px;
+    border-bottom-color: rgba(12, 59, 49, 0.14);
+  }
+
+  .icon-button {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .header-title strong {
+    font-size: 17px;
+  }
+
+  .header-title span {
+    font-size: 12px;
+  }
+
+  .screen-wrap {
+    padding: 12px 12px 92px;
+  }
+
+  .screen.is-active,
+  #home.screen.is-active,
+  #booking.screen.is-active,
+  #profile.screen.is-active,
+  #challenges.screen.is-active,
+  #shop.screen.is-active {
+    display: grid;
+    gap: 10px;
+  }
+
+  #profile.screen.is-active {
+    grid-template-columns: 1fr;
+  }
+
+  #profile .profile-card,
+  #profile .performance-post,
+  #profile .improvement-card,
+  #profile .gear-card,
+  #profile .rubber-card,
+  #profile .integration-card {
+    grid-column: 1;
+    min-height: 0;
+  }
+
+  #profile .profile-card {
+    min-height: 300px;
+  }
+
+  #profile .gear-card #gearSignals {
+    grid-template-columns: 1fr;
+    margin-top: 14px;
+  }
+
+  #challenges.screen.is-active {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .leaderboard-card,
+  #challenges .ranking-card,
+  #challenges .pending-card,
+  #challenges .challenge-grid,
+  #challenges .challenge-focus,
+  #challenges .badge-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .home-hero,
+  .streak-card,
+  .simple-card,
+  .event-card,
+  .profile-card,
+  .performance-post,
+  .leaderboard-card,
+  .challenge-card,
+  .main-registry-card,
+  .table-network-card,
+  .opponent-notes-card,
+  .gear-card,
+  .pending-card,
+  .activity-card,
+  .coach-card,
+  .map-card,
+  .selected-spot-card,
+  .scorer-card,
+  .drill-card,
+  .rubber-card,
+  .integration-card,
+  .ranking-card,
+  .badge-card,
+  .improvement-card {
+    margin-top: 0;
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: clamp(30px, 12vw, 48px);
+  }
+
+  h2 {
+    font-size: 19px;
+  }
+
+  .section-title {
+    margin-bottom: 0;
+  }
+
+  .home-hero {
+    min-height: 230px;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .registry-grid,
+  #gearSignals,
+  .metrics-grid,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feed-row,
+  .rank-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .pending-row,
+  .table-spot,
+  .note-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .feed-row em,
+  .rank-row em,
+  .pending-row button,
+  .table-spot span,
+  .note-row span {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  #booking .map-card {
+    order: 1;
+  }
+
+  #booking .selected-spot-card {
+    order: 2;
+  }
+
+  #booking .booking-controls {
+    order: 3;
+  }
+
+  #booking .booking-side {
+    order: 4;
+  }
+
+  .real-map {
+    min-height: 280px;
+    margin-top: 12px;
+  }
+
+  .map-pin {
+    width: 34px;
+    height: 34px;
+  }
+
+  .map-pin.is-active {
+    width: 46px;
+    height: 46px;
+  }
+
+  .selected-spot-card {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs,
+  .date-row,
+  .filter-row {
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  #booking.screen.is-active {
+    gap: 10px;
+  }
+
+  .booking-list {
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  .booking-row {
+    min-height: 66px;
+    grid-template-columns: 64px 1fr 30px;
+    padding: 12px;
+  }
+
+  .profile-card {
+    min-height: 250px;
+  }
+
+  #profile .profile-card {
+    min-height: 300px;
+  }
+
+  .rubber-card {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .racket-art {
+    min-height: 112px;
+  }
+
+  .racket-art::before {
+    width: 76px;
+    height: 76px;
+  }
+
+  .racket-art span {
+    left: 60px;
+    top: 56px;
+    width: 28px;
+    height: 66px;
+  }
+
+  .ranking-card {
+    gap: 12px;
+  }
+
+  #challenges .ranking-card {
+    min-height: 0;
+    padding: 18px;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  #challenges .ranking-card h1 {
+    white-space: normal;
+    font-size: clamp(48px, 14vw, 72px);
+  }
+
+  #challenges .ranking-card .rank-row {
+    min-height: 58px;
+  }
+
+  #challenges .challenge-card {
+    min-height: 190px;
+  }
+
+  #challenges .leaderboard-card,
+  #challenges .pending-card,
+  #challenges .ranking-card,
+  #challenges .challenge-grid,
+  #challenges .challenge-focus,
+  #challenges .badge-card {
+    grid-row: auto;
+  }
+
+  #challenges .challenge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav {
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    min-height: 72px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .bottom-nav button {
+    min-width: 0;
+    font-size: 10px;
+  }
+
+  .bottom-nav span {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 390px) {
+  .registry-grid,
+  #gearSignals,
+  .metrics-grid,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav button {
+    font-size: 9px;
+  }
+}
+
+#booking .booking-side .event-card,
+#booking .booking-side .table-network-card {
+  grid-column: auto;
+  grid-row: auto;
+  position: static;
+  margin-top: 0;
+}
+
+@media (min-width: 980px) {
+  #booking .booking-side {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+    gap: 12px;
+    align-self: start;
+  }
+
+  #booking .booking-side .event-card {
+    grid-column: auto;
+    grid-row: auto;
+    padding: 14px;
+    min-height: 0;
+    gap: 10px;
+  }
+
+  #booking .booking-side .table-network-card {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 0;
+  }
+
+  #booking .booking-side .my-reservations-card {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 0;
+  }
+
+  #booking .booking-side .event-card h2 {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  #booking .booking-side .event-card span {
+    font-size: 16px;
+  }
+
+  #booking .booking-side .event-card .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  #booking .booking-side .event-card .primary-action {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 15px;
+  }
+}
