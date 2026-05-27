@@ -10,7 +10,7 @@
     <title>Ping Pang Paris</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=main-sync-2" />
+    <link rel="stylesheet" href="styles.css?v=booking-happy-top-1" />
   </head>
   <body>
     <div class="app">
@@ -140,42 +140,63 @@
             <div id="selectedSpot"></div>
           </section>
 
-          <div class="tabs">
-            <button class="is-active" type="button">Tables</button>
-            <button type="button">Événements</button>
-          </div>
-
-          <div class="date-row" aria-label="Dates">
-            <button class="is-active" type="button">Mer. 01/05</button>
-            <button type="button">Jeu. 02/05</button>
-            <button type="button">Ven. 03/05</button>
-            <button type="button">Sam. 04/05</button>
-          </div>
-
-          <div class="filter-row">
-            <span>Filtrer par :</span>
-            <button class="is-active" type="button">Table</button>
-            <button type="button">Coach</button>
-          </div>
-
-          <div class="booking-list" id="bookingList">
-            <article class="booking-row"><strong>16:00</strong><p>3 tables disponibles</p><button type="button"></button></article>
-          </div>
-
-          <section class="event-card">
-            <div>
-              <p class="eyebrow">18:30 - 20:30</p>
-              <h2>Happy Hours</h2>
-              <span>8 places restantes • Paris</span>
+          <section class="booking-controls">
+            <div class="tabs">
+              <button class="is-active" type="button" data-booking-tab="tables">Tables</button>
+              <button type="button" data-booking-tab="events">Événements</button>
             </div>
-            <button class="primary-action" type="button" data-success="Inscription Happy Hours confirmée.">Participer</button>
+
+            <div class="date-row" aria-label="Dates">
+              <button class="is-active" type="button" data-booking-date="wed">Mer. 01/05</button>
+              <button type="button" data-booking-date="thu">Jeu. 02/05</button>
+              <button type="button" data-booking-date="fri">Ven. 03/05</button>
+              <button type="button" data-booking-date="sat">Sam. 04/05</button>
+            </div>
+
+            <div class="filter-row">
+              <span>Filtrer par :</span>
+              <button class="is-active" type="button">Table</button>
+              <button type="button">Coach</button>
+            </div>
+
+            <div class="booking-list" id="bookingList">
+              <article class="booking-row"><strong>16:00</strong><p>3 tables disponibles</p><button type="button"></button></article>
+            </div>
           </section>
 
-          <section class="table-network-card">
-            <p class="eyebrow">Clubs & tables du réseau</p>
-            <h2>Local legends</h2>
-            <div id="tableNetwork"></div>
-          </section>
+          <aside class="booking-side">
+            <section class="event-card">
+              <div>
+                <p class="eyebrow">18:30 - 20:30</p>
+                <h2>Happy Hours</h2>
+                <span>8 places restantes • Paris</span>
+              </div>
+              <button
+                class="primary-action"
+                type="button"
+                data-featured-reservation="event-happy-hours"
+                data-booking-title="Happy Hours"
+                data-booking-meta="18:30 - 20:30 • 8 places restantes • Paris"
+              >Participer</button>
+            </section>
+
+            <section class="table-network-card">
+              <p class="eyebrow">Clubs & tables du réseau</p>
+              <h2>Local legends</h2>
+              <div id="tableNetwork"></div>
+            </section>
+
+            <section class="my-reservations-card">
+              <div class="card-head">
+                <div>
+                  <p class="eyebrow">Compte</p>
+                  <h2>Mes réservations</h2>
+                </div>
+                <span class="xp-pill" id="reservationCount">0</span>
+              </div>
+              <div id="myReservations"></div>
+            </section>
+          </aside>
         </section>
 
         <section class="screen" id="social">
@@ -256,12 +277,6 @@
             </ul>
           </section>
 
-          <section class="gear-card">
-            <p class="eyebrow">Gear tracking</p>
-            <h2>Matériel connecté</h2>
-            <div id="gearSignals"></div>
-          </section>
-
           <section class="rubber-card">
             <div class="racket-art">
               <span></span>
@@ -272,6 +287,12 @@
               <p id="rubberText">Compare brillance, bords abîmés et perte de grip avec tes anciennes séances.</p>
               <button class="primary-action" type="button" id="scanRubber">Scanner le revêtement</button>
             </div>
+          </section>
+
+          <section class="gear-card">
+            <p class="eyebrow">Gear tracking</p>
+            <h2>Matériel connecté</h2>
+            <div id="gearSignals"></div>
           </section>
 
           <section class="integration-card">
@@ -326,13 +347,6 @@
         </section>
 
         <section class="screen" id="challenges">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">Challenges</p>
-              <h1>Classement et objectifs.</h1>
-            </div>
-          </div>
-
           <section class="leaderboard-card">
             <div class="card-head">
               <h2>Gold League Paris</h2>
@@ -356,7 +370,7 @@
             <div id="pendingMatches"></div>
           </section>
 
-          <div class="challenge-grid">
+          <section class="challenge-grid">
             <article class="challenge-card">
               <p class="eyebrow">Perso</p>
               <h2>10 h de panier</h2>
@@ -367,7 +381,7 @@
               <h2>Double du mois</h2>
               <div class="progress"><span style="width: 72%"></span></div>
             </article>
-          </div>
+          </section>
 
           <section class="improvement-card challenge-focus">
             <p class="eyebrow">Prochain cap</p>
@@ -422,6 +436,6 @@
     </aside>
 
     <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=main-sync-2"></script>
+    <script src="app.js?v=booking-happy-top-1"></script>
   </body>
 </html>

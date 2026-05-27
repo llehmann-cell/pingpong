@@ -159,6 +159,11 @@ button {
   place-items: center;
 }
 
+.icon-button.is-active {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
 .message-button {
   font-size: 18px;
 }
@@ -434,6 +439,45 @@ h2 {
   background: transparent;
 }
 
+.booking-row.is-reserved {
+  background: var(--green-soft);
+}
+
+.booking-row button.is-reserved {
+  border-color: var(--green);
+  background: radial-gradient(circle at center, var(--green) 0 45%, transparent 47%);
+}
+
+.reservation-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.reservation-row:last-child {
+  border-bottom: 0;
+}
+
+.reservation-row p,
+.empty-reservation {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.reservation-row button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  padding: 0 12px;
+  font-weight: 900;
+}
+
 .event-card {
   margin-top: 14px;
   padding: 18px;
@@ -443,6 +487,17 @@ h2 {
 
 .event-card span {
   color: var(--muted);
+}
+
+.booking-controls {
+  display: grid;
+  gap: 12px;
+}
+
+.booking-side {
+  display: grid;
+  gap: 12px;
+  align-self: start;
 }
 
 .section-title {
@@ -777,6 +832,7 @@ h2 {
   #booking .date-row,
   #booking .filter-row,
   #booking .booking-list,
+  #booking .booking-controls,
   #booking .map-card,
   #booking .selected-spot-card {
     grid-column: 1;
@@ -869,6 +925,10 @@ h2 {
   .home-grid,
   .player-list,
   .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .challenge-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1081,6 +1141,7 @@ h2,
 
 .main-registry-card,
 .table-network-card,
+.my-reservations-card,
 .opponent-notes-card,
 .gear-card,
 .pending-card,
@@ -1683,5 +1744,885 @@ h2,
 
   .score-actions button {
     flex: 1 1 120px;
+  }
+}
+
+/* App polish layer */
+:root {
+  --app-gap: 14px;
+  --app-radius: 12px;
+  --app-shadow: 0 10px 28px rgba(10, 28, 23, 0.08);
+}
+
+.screen-wrap {
+  max-width: 1220px;
+}
+
+.home-hero,
+.streak-card,
+.simple-card,
+.event-card,
+.profile-card,
+.performance-post,
+.leaderboard-card,
+.challenge-card,
+.main-registry-card,
+.table-network-card,
+.opponent-notes-card,
+.gear-card,
+.pending-card,
+.activity-card,
+.coach-card,
+.map-card,
+.selected-spot-card,
+.scorer-card,
+.drill-card,
+.rubber-card,
+.integration-card,
+.ranking-card,
+.badge-card,
+.improvement-card {
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+}
+
+.map-card,
+.selected-spot-card,
+.event-card,
+.table-network-card,
+.profile-card,
+.performance-post,
+.improvement-card,
+.gear-card,
+.rubber-card,
+.integration-card,
+.leaderboard-card,
+.ranking-card,
+.pending-card,
+.badge-card,
+.challenge-card {
+  margin-top: 0;
+}
+
+.section-title h1,
+.map-card h1,
+.ranking-card h1,
+.profile-card h1 {
+  font-size: clamp(30px, 4.4vw, 52px);
+}
+
+.card-head,
+.section-title {
+  align-items: center;
+}
+
+.real-map {
+  min-height: 410px;
+}
+
+.selected-spot-card {
+  align-self: start;
+}
+
+.selected-spot-card #selectedSpot {
+  display: grid;
+  gap: 14px;
+}
+
+.selected-spot-card .primary-action {
+  width: 100%;
+}
+
+.spot-grid {
+  grid-template-columns: 1fr;
+}
+
+.booking-list {
+  border: 1px solid var(--line);
+  border-radius: var(--app-radius);
+}
+
+.tabs,
+.date-row,
+.filter-row {
+  border: 1px solid var(--line);
+}
+
+.tabs {
+  margin-top: 0;
+}
+
+.filter-row {
+  border-color: var(--green);
+}
+
+.event-card {
+  border: 1px solid var(--line);
+}
+
+.table-network-card {
+  align-self: start;
+}
+
+#profile .profile-card,
+#profile .performance-post,
+#profile .improvement-card,
+#profile .gear-card,
+#profile .rubber-card,
+#profile .integration-card {
+  min-height: 100%;
+}
+
+.profile-card {
+  display: grid;
+  align-content: center;
+}
+
+#profile .profile-card {
+  min-height: 370px;
+}
+
+#profile .performance-post {
+  min-height: 370px;
+}
+
+#profile .improvement-card {
+  min-height: 360px;
+}
+
+#profile .gear-card {
+  min-height: 270px;
+}
+
+#profile .integration-card,
+#profile .rubber-card {
+  min-height: 300px;
+}
+
+#profile .performance-post {
+  display: grid;
+  align-content: space-between;
+}
+
+#profile .performance-post .metrics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#profile .performance-post .metrics-grid span {
+  min-height: 92px;
+}
+
+#profile .gear-card #gearSignals {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 22px;
+}
+
+#profile .gear-card .gear-signal {
+  min-height: 86px;
+}
+
+#profile .improvement-card ul {
+  gap: 12px;
+}
+
+#profile .improvement-card li {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+}
+
+.metrics-grid,
+#gearSignals,
+#integrationGrid,
+#badgeGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rubber-card {
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+
+.racket-art {
+  min-height: 130px;
+}
+
+.racket-art::before {
+  width: 96px;
+  height: 96px;
+}
+
+.racket-art span {
+  left: 78px;
+  top: 68px;
+  width: 34px;
+  height: 86px;
+}
+
+.ranking-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+#rankingTable {
+  min-width: 0;
+}
+
+.leaderboard-card,
+.pending-card,
+.badge-card {
+  align-self: start;
+}
+
+.challenge-grid {
+  margin-top: 0;
+}
+
+.challenge-card {
+  min-height: 138px;
+  display: grid;
+  align-content: space-between;
+}
+
+#challenges .leaderboard-card,
+#challenges .pending-card,
+#challenges .challenge-card,
+#challenges .challenge-focus,
+#challenges .badge-card {
+  min-height: 0;
+}
+
+#challenges .leaderboard-card .card-head {
+  margin-bottom: 12px;
+}
+
+#challenges .leaderboard-card h2,
+#challenges .pending-card h2,
+#challenges .challenge-card h2,
+#challenges .challenge-focus h2 {
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+#challenges .ranking-card {
+  min-height: 420px;
+  padding: 28px;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(520px, 1.28fr);
+  overflow: hidden;
+}
+
+#challenges .ranking-card h1 {
+  color: white;
+  font-size: clamp(58px, 5vw, 86px);
+  line-height: 0.9;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+#challenges .ranking-card #rankingTable {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+#challenges .ranking-card .rank-row {
+  grid-template-columns: 54px minmax(0, 1fr) 84px;
+  min-height: 72px;
+  padding: 12px 0;
+}
+
+#challenges .ranking-card .rank-row strong,
+#challenges .ranking-card .rank-row p {
+  overflow-wrap: anywhere;
+}
+
+#challenges .ranking-card .rank-row em {
+  justify-self: end;
+}
+
+#challenges .ranking-card .rank-row.is-you {
+  padding: 14px;
+}
+
+#challenges .leaderboard-card,
+#challenges .pending-card {
+  padding: 22px;
+}
+
+#challenges .challenge-card {
+  min-height: 150px;
+  padding: 22px;
+}
+
+#challenges .challenge-card .progress {
+  align-self: end;
+}
+
+#challenges .challenge-focus {
+  padding: 22px;
+}
+
+#challenges .badge-card {
+  padding: 22px;
+}
+
+@media (min-width: 980px) {
+  #booking.screen.is-active {
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+    column-gap: var(--app-gap);
+    row-gap: 12px;
+  }
+
+  #booking .map-card {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #booking .selected-spot-card {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #booking .event-card {
+    grid-column: 2;
+    grid-row: 2;
+    position: static;
+  }
+
+  #booking .table-network-card {
+    grid-column: 2;
+    grid-row: 3 / span 4;
+  }
+
+  #booking .tabs {
+    grid-row: auto;
+  }
+
+  #booking .date-row {
+    grid-row: auto;
+  }
+
+  #booking .filter-row {
+    grid-row: auto;
+  }
+
+  #booking .booking-list {
+    grid-row: auto;
+  }
+
+  #booking .booking-controls {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  #booking .booking-side {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  #booking .booking-side .event-card,
+  #booking .booking-side .table-network-card {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  #profile.screen.is-active {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  #profile .profile-card {
+    grid-column: span 4;
+    grid-row: 1;
+  }
+
+  #profile .performance-post {
+    grid-column: span 8;
+    grid-row: 1;
+  }
+
+  #profile .improvement-card {
+    grid-column: span 4;
+    grid-row: 2;
+  }
+
+  #profile .rubber-card {
+    grid-column: span 6;
+    grid-row: 3;
+  }
+
+  #profile .gear-card {
+    grid-column: span 8;
+    grid-row: 2;
+  }
+
+  #profile .integration-card {
+    grid-column: span 6;
+    grid-row: 3;
+  }
+
+  #challenges.screen.is-active {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--app-gap);
+  }
+
+  #challenges .ranking-card {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  #challenges .leaderboard-card {
+    grid-column: 1 / span 6;
+    grid-row: 1;
+  }
+
+  #challenges .pending-card {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+
+  #challenges .challenge-grid {
+    grid-column: 1 / span 5;
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--app-gap);
+  }
+
+  #challenges .challenge-focus {
+    grid-column: 6 / span 4;
+    grid-row: 3;
+  }
+
+  #challenges .badge-card {
+    grid-column: 10 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 979px) {
+  #booking.screen.is-active,
+  #profile.screen.is-active,
+  #challenges.screen.is-active {
+    display: grid;
+    gap: var(--app-gap);
+  }
+
+  #profile.screen.is-active {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #profile .profile-card,
+  #profile .performance-post,
+  #profile .improvement-card,
+  #profile .gear-card,
+  #profile .rubber-card,
+  #profile .integration-card {
+    grid-column: auto;
+    min-height: 0;
+  }
+
+  #profile .rubber-card {
+    grid-column: 1 / -1;
+  }
+
+  #profile .gear-card #gearSignals {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ranking-card {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .ranking-card {
+    grid-template-columns: 1fr;
+  }
+
+  .real-map {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background: var(--paper);
+  }
+
+  .app {
+    max-width: none;
+  }
+
+  .app-header {
+    min-height: 66px;
+    padding: 8px 12px;
+    grid-template-columns: 38px minmax(0, 1fr) 38px 38px;
+    border-bottom-color: rgba(12, 59, 49, 0.14);
+  }
+
+  .icon-button {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .header-title strong {
+    font-size: 17px;
+  }
+
+  .header-title span {
+    font-size: 12px;
+  }
+
+  .screen-wrap {
+    padding: 12px 12px 92px;
+  }
+
+  .screen.is-active,
+  #home.screen.is-active,
+  #booking.screen.is-active,
+  #profile.screen.is-active,
+  #challenges.screen.is-active,
+  #shop.screen.is-active {
+    display: grid;
+    gap: 10px;
+  }
+
+  #profile.screen.is-active {
+    grid-template-columns: 1fr;
+  }
+
+  #profile .profile-card,
+  #profile .performance-post,
+  #profile .improvement-card,
+  #profile .gear-card,
+  #profile .rubber-card,
+  #profile .integration-card {
+    grid-column: 1;
+    min-height: 0;
+  }
+
+  #profile .profile-card {
+    min-height: 300px;
+  }
+
+  #profile .gear-card #gearSignals {
+    grid-template-columns: 1fr;
+    margin-top: 14px;
+  }
+
+  #challenges.screen.is-active {
+    grid-template-columns: 1fr;
+  }
+
+  #challenges .leaderboard-card,
+  #challenges .ranking-card,
+  #challenges .pending-card,
+  #challenges .challenge-grid,
+  #challenges .challenge-focus,
+  #challenges .badge-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .home-hero,
+  .streak-card,
+  .simple-card,
+  .event-card,
+  .profile-card,
+  .performance-post,
+  .leaderboard-card,
+  .challenge-card,
+  .main-registry-card,
+  .table-network-card,
+  .opponent-notes-card,
+  .gear-card,
+  .pending-card,
+  .activity-card,
+  .coach-card,
+  .map-card,
+  .selected-spot-card,
+  .scorer-card,
+  .drill-card,
+  .rubber-card,
+  .integration-card,
+  .ranking-card,
+  .badge-card,
+  .improvement-card {
+    margin-top: 0;
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: clamp(30px, 12vw, 48px);
+  }
+
+  h2 {
+    font-size: 19px;
+  }
+
+  .section-title {
+    margin-bottom: 0;
+  }
+
+  .home-hero {
+    min-height: 230px;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .registry-grid,
+  #gearSignals,
+  .metrics-grid,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feed-row,
+  .rank-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .pending-row,
+  .table-spot,
+  .note-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .feed-row em,
+  .rank-row em,
+  .pending-row button,
+  .table-spot span,
+  .note-row span {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  #booking .map-card {
+    order: 1;
+  }
+
+  #booking .selected-spot-card {
+    order: 2;
+  }
+
+  #booking .booking-controls {
+    order: 3;
+  }
+
+  #booking .booking-side {
+    order: 4;
+  }
+
+  .real-map {
+    min-height: 280px;
+    margin-top: 12px;
+  }
+
+  .map-pin {
+    width: 34px;
+    height: 34px;
+  }
+
+  .map-pin.is-active {
+    width: 46px;
+    height: 46px;
+  }
+
+  .selected-spot-card {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs,
+  .date-row,
+  .filter-row {
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  #booking.screen.is-active {
+    gap: 10px;
+  }
+
+  .booking-list {
+    margin: 0;
+    border-radius: 10px;
+  }
+
+  .booking-row {
+    min-height: 66px;
+    grid-template-columns: 64px 1fr 30px;
+    padding: 12px;
+  }
+
+  .profile-card {
+    min-height: 250px;
+  }
+
+  #profile .profile-card {
+    min-height: 300px;
+  }
+
+  .rubber-card {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .racket-art {
+    min-height: 112px;
+  }
+
+  .racket-art::before {
+    width: 76px;
+    height: 76px;
+  }
+
+  .racket-art span {
+    left: 60px;
+    top: 56px;
+    width: 28px;
+    height: 66px;
+  }
+
+  .ranking-card {
+    gap: 12px;
+  }
+
+  #challenges .ranking-card {
+    min-height: 0;
+    padding: 18px;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  #challenges .ranking-card h1 {
+    white-space: normal;
+    font-size: clamp(48px, 14vw, 72px);
+  }
+
+  #challenges .ranking-card .rank-row {
+    min-height: 58px;
+  }
+
+  #challenges .challenge-card {
+    min-height: 190px;
+  }
+
+  #challenges .leaderboard-card,
+  #challenges .pending-card,
+  #challenges .ranking-card,
+  #challenges .challenge-grid,
+  #challenges .challenge-focus,
+  #challenges .badge-card {
+    grid-row: auto;
+  }
+
+  #challenges .challenge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav {
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    min-height: 72px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .bottom-nav button {
+    min-width: 0;
+    font-size: 10px;
+  }
+
+  .bottom-nav span {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 390px) {
+  .registry-grid,
+  #gearSignals,
+  .metrics-grid,
+  .spot-grid,
+  #integrationGrid,
+  #badgeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav button {
+    font-size: 9px;
+  }
+}
+
+#booking .booking-side .event-card,
+#booking .booking-side .table-network-card {
+  grid-column: auto;
+  grid-row: auto;
+  position: static;
+  margin-top: 0;
+}
+
+@media (min-width: 980px) {
+  #booking .booking-side {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+    gap: 12px;
+    align-self: start;
+  }
+
+  #booking .booking-side .event-card {
+    grid-column: auto;
+    grid-row: auto;
+    padding: 14px;
+    min-height: 0;
+    gap: 10px;
+  }
+
+  #booking .booking-side .table-network-card {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 0;
+  }
+
+  #booking .booking-side .my-reservations-card {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 0;
+  }
+
+  #booking .booking-side .event-card h2 {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  #booking .booking-side .event-card span {
+    font-size: 16px;
+  }
+
+  #booking .booking-side .event-card .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  #booking .booking-side .event-card .primary-action {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 15px;
   }
 }

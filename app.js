@@ -19,13 +19,49 @@ const subtitles = {
   challenges: "Challenges",
 };
 
-const bookings = [
-  { time: "16:00", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
-  { time: "16:30", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
-  { time: "17:00", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
-  { time: "17:30", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
-  { time: "18:30", label: "2 tables disponibles", info: "Happy Hours à côté", tag: "Peak" },
-];
+const bookingsByDate = {
+  wed: [
+    { time: "16:00", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
+    { time: "16:30", label: "3 tables disponibles", info: "T2/T3/T4", tag: "Hors peak" },
+    { time: "17:00", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
+    { time: "17:30", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
+    { time: "18:30", label: "2 tables disponibles", info: "Happy Hours à côté", tag: "Peak" },
+  ],
+  thu: [
+    { time: "12:00", label: "1 table coach disponible", info: "Coach service court • Table 2", tag: "Coach" },
+    { time: "18:00", label: "4 tables disponibles", info: "T1/T2/T3/T4", tag: "" },
+    { time: "19:30", label: "2 tables doubles", info: "2 vs 2 recommandé", tag: "Team" },
+  ],
+  fri: [
+    { time: "17:30", label: "2 tables disponibles", info: "T2/T4", tag: "Peak" },
+    { time: "20:00", label: "3 tables ladder", info: "Matchs classés PPR", tag: "Ranked" },
+  ],
+  sat: [
+    { time: "10:00", label: "4 tables ouvertes", info: "Open training matin", tag: "Hors peak" },
+    { time: "15:00", label: "2 tables famille", info: "Créneau calme", tag: "" },
+    { time: "18:00", label: "1 table challenge", info: "Défi local legend", tag: "Legend" },
+  ],
+};
+
+const bookingEventsByDate = {
+  wed: [
+    { time: "18:30 - 20:30", label: "Happy Hours", info: "8 places restantes • Paris ladder night", tag: "Event" },
+    { time: "19:00", label: "Tournante 2 vs 2", info: "12 inscrits • niveaux mixtes", tag: "Team" },
+    { time: "20:00", label: "Coach block service court", info: "6 places • focus remise et 3e balle", tag: "Coach" },
+  ],
+  thu: [
+    { time: "18:00 - 19:30", label: "Training service court", info: "Coach Maya • 5 places restantes", tag: "Coach" },
+    { time: "20:00 - 22:00", label: "Double du jeudi", info: "Format 2 vs 2 • 10 inscrits", tag: "Team" },
+  ],
+  fri: [
+    { time: "18:30 - 21:30", label: "Friday ranked ladder", info: "Matchs PPR vérifiés • 16 places", tag: "Ranked" },
+    { time: "21:30", label: "Replay vite", info: "Clip du meilleur échange au club", tag: "Replay" },
+  ],
+  sat: [
+    { time: "10:30 - 12:00", label: "Kids Ping Pang", info: "Initiation famille • 8 places", tag: "Kids" },
+    { time: "15:00 - 17:00", label: "Open challenge", info: "Défis local legends • entrée libre", tag: "Legend" },
+  ],
+};
 
 const players = [
   { name: "Lila Martin", level: "1420 pts", style: "Bloqueuse agressive", match: "94%", city: "Paris 13", status: "Dispo 18:30" },
@@ -222,6 +258,9 @@ const badges = ["Local Legend", "Serve Reader", "12 Day Streak", "Tournament Hos
 const integrations = ["Garmin", "Apple Health", "Strava import"];
 const state = {
   selectedSpot: tableSpots[0].name,
+  bookingMode: "tables",
+  bookingDate: "wed",
+  reservations: [],
   score: { you: 0, them: 0 },
   completedDrills: {},
   rubberScanned: false,
@@ -246,21 +285,54 @@ function showSuccess(text) {
 }
 
 function renderBookings() {
-  qs("#bookingList").innerHTML = bookings
+  const data = state.bookingMode === "tables" ? bookingsByDate : bookingEventsByDate;
+  const items = data[state.bookingDate] || [];
+  qs("#bookingList").innerHTML = items
     .map(
-      (slot) => `
-        <article class="booking-row">
+      (slot, index) => {
+        const id = `${state.bookingMode}-${slot.time}`;
+        const reserved = state.reservations.some((reservation) => reservation.id === id);
+        return `
+        <article class="booking-row ${reserved ? "is-reserved" : ""}">
           <strong>${slot.time}</strong>
           <div>
             ${slot.tag ? `<em>${slot.tag}</em>` : ""}
             <p>${slot.label}</p>
             <span>${slot.info}</span>
           </div>
-          <button type="button" aria-label="Réserver ${slot.time}" data-success="Table réservée à ${slot.time}."></button>
+          <button
+            class="${reserved ? "is-reserved" : ""}"
+            type="button"
+            aria-label="Réserver ${slot.label}"
+            data-booking-id="${id}"
+            data-booking-kind="${state.bookingMode}"
+            data-booking-title="${slot.label}"
+            data-booking-meta="${slot.time} • ${slot.info}"
+          ></button>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
+}
+
+function renderReservations() {
+  qs("#reservationCount").textContent = String(state.reservations.length);
+  qs("#myReservations").innerHTML = state.reservations.length
+    ? state.reservations
+        .map(
+          (reservation) => `
+            <article class="reservation-row">
+              <div>
+                <strong>${reservation.title}</strong>
+                <p>${reservation.meta}</p>
+              </div>
+              <button type="button" data-cancel-reservation="${reservation.id}">Annuler</button>
+            </article>
+          `,
+        )
+        .join("")
+    : `<p class="empty-reservation">Aucune réservation pour le moment.</p>`;
 }
 
 function renderPlayers() {
@@ -564,32 +636,66 @@ function renderCart() {
     : `<p class="empty-cart">Ton panier est vide.</p>`;
 }
 
-qsa("[data-view]").forEach((button) => {
-  button.addEventListener("click", () => setView(button.dataset.view));
-});
-
 document.addEventListener("click", (event) => {
   const success = event.target.closest("[data-success]");
   if (success) showSuccess(success.dataset.success);
 
+  const bookingButton = event.target.closest(".booking-row button");
+  if (bookingButton) {
+    const existing = state.reservations.find((reservation) => reservation.id === bookingButton.dataset.bookingId);
+    if (existing) {
+      state.reservations = state.reservations.filter((reservation) => reservation.id !== bookingButton.dataset.bookingId);
+      showSuccess(`${existing.title} retiré de tes réservations.`);
+    } else {
+      state.reservations.push({
+        id: bookingButton.dataset.bookingId,
+        title: bookingButton.dataset.bookingTitle,
+        meta: bookingButton.dataset.bookingMeta,
+      });
+      showSuccess(`${bookingButton.dataset.bookingTitle} ajouté à tes réservations.`);
+    }
+    renderBookings();
+    renderReservations();
+  }
+
+  const featuredReservation = event.target.closest("[data-featured-reservation]");
+  if (featuredReservation) {
+    const exists = state.reservations.some((reservation) => reservation.id === featuredReservation.dataset.featuredReservation);
+    if (!exists) {
+      state.reservations.push({
+        id: featuredReservation.dataset.featuredReservation,
+        title: featuredReservation.dataset.bookingTitle,
+        meta: featuredReservation.dataset.bookingMeta,
+      });
+    }
+    renderReservations();
+    showSuccess(`${featuredReservation.dataset.bookingTitle} ajouté à tes réservations.`);
+  }
+
   const viewButton = event.target.closest("[data-view]");
-  if (viewButton) setView(viewButton.dataset.view);
+  if (viewButton) {
+    setView(viewButton.dataset.view);
+    showSuccess(`${subtitles[viewButton.dataset.view] || "Page"} ouvert.`);
+  }
 
   const mapSpot = event.target.closest("[data-map-spot]");
   if (mapSpot) {
     state.selectedSpot = mapSpot.dataset.mapSpot;
     renderMap();
+    showSuccess(`${mapSpot.dataset.mapSpot} sélectionnée.`);
   }
 
   const scoreButton = event.target.closest("[data-score]");
   if (scoreButton) {
     state.score[scoreButton.dataset.score] += 1;
     renderScore();
+    showSuccess(scoreButton.dataset.score === "you" ? "Point ajouté pour toi." : "Point ajouté au rival.");
   }
 
   if (event.target.closest("[data-reset-score]")) {
     state.score = { you: 0, them: 0 };
     renderScore();
+    showSuccess("Score remis à zéro.");
   }
 
   const saveMatch = event.target.closest("[data-save-match]");
@@ -604,6 +710,7 @@ document.addEventListener("click", (event) => {
     state.completedDrills[drill.dataset.drill] = !state.completedDrills[drill.dataset.drill];
     if (!state.completedDrills[drill.dataset.drill]) delete state.completedDrills[drill.dataset.drill];
     renderDrills();
+    showSuccess(state.completedDrills[drill.dataset.drill] ? "Exercice validé." : "Exercice retiré.");
   }
 
   const addCart = event.target.closest("[data-add-cart]");
@@ -614,6 +721,46 @@ document.addEventListener("click", (event) => {
     renderCart();
     qs("#openCart").classList.add("has-dot");
     showSuccess(`${product.name} ajouté au panier.`);
+  }
+
+  const bookingTab = event.target.closest("[data-booking-tab]");
+  if (bookingTab) {
+    qsa(".tabs button").forEach((button) => button.classList.remove("is-active"));
+    bookingTab.classList.add("is-active");
+    state.bookingMode = bookingTab.dataset.bookingTab;
+    renderBookings();
+    showSuccess(`${bookingTab.textContent.trim()} sélectionné.`);
+  }
+
+  const cancelReservation = event.target.closest("[data-cancel-reservation]");
+  if (cancelReservation) {
+    const reservation = state.reservations.find((item) => item.id === cancelReservation.dataset.cancelReservation);
+    state.reservations = state.reservations.filter((item) => item.id !== cancelReservation.dataset.cancelReservation);
+    renderBookings();
+    renderReservations();
+    showSuccess(`${reservation?.title || "Réservation"} annulé.`);
+  }
+
+  const dateButton = event.target.closest(".date-row button");
+  if (dateButton) {
+    qsa(".date-row button").forEach((button) => button.classList.remove("is-active"));
+    dateButton.classList.add("is-active");
+    state.bookingDate = dateButton.dataset.bookingDate;
+    renderBookings();
+    showSuccess(`${dateButton.textContent.trim()} sélectionné.`);
+  }
+
+  const filterButton = event.target.closest(".filter-row button");
+  if (filterButton) {
+    qsa(".filter-row button").forEach((button) => button.classList.remove("is-active"));
+    filterButton.classList.add("is-active");
+    showSuccess(`Filtre ${filterButton.textContent.trim()} appliqué.`);
+  }
+
+  const socialFilter = event.target.closest("#social .section-title .icon-button");
+  if (socialFilter) {
+    socialFilter.classList.toggle("is-active");
+    showSuccess("Filtres de matching mis à jour.");
   }
 });
 
@@ -626,27 +773,33 @@ qs("#scanRubber").addEventListener("click", () => {
 qs("#openMessages").addEventListener("click", () => {
   qs("#messageDrawer").classList.add("is-open");
   qs("#messageDrawer").setAttribute("aria-hidden", "false");
+  qs("#openMessages").classList.remove("has-dot");
+  showSuccess("Messages ouverts.");
 });
 
 qs("#closeMessages").addEventListener("click", () => {
   qs("#messageDrawer").classList.remove("is-open");
   qs("#messageDrawer").setAttribute("aria-hidden", "true");
+  showSuccess("Messages fermés.");
 });
 
 qs("#openCart").addEventListener("click", () => {
   qs("#cartDrawer").classList.add("is-open");
   qs("#cartDrawer").setAttribute("aria-hidden", "false");
   qs("#openCart").classList.remove("has-dot");
+  showSuccess("Panier ouvert.");
 });
 
 qs("#closeCart").addEventListener("click", () => {
   qs("#cartDrawer").classList.remove("is-open");
   qs("#cartDrawer").setAttribute("aria-hidden", "true");
+  showSuccess("Panier fermé.");
 });
 
 qs("#shopCheckout").addEventListener("click", () => {
   qs("#cartDrawer").classList.add("is-open");
   qs("#cartDrawer").setAttribute("aria-hidden", "false");
+  showSuccess("Panier ouvert.");
 });
 
 qsa("[data-shop-filter]").forEach((button) => {
@@ -654,7 +807,13 @@ qsa("[data-shop-filter]").forEach((button) => {
     qsa("[data-shop-filter]").forEach((item) => item.classList.remove("is-active"));
     button.classList.add("is-active");
     renderShop(button.dataset.shopFilter);
+    showSuccess(`Collection ${button.textContent.trim()} affichée.`);
   });
+});
+
+qs(".back-button").addEventListener("click", () => {
+  setView("home");
+  showSuccess("Retour à l'accueil.");
 });
 
 qs("#messageForm").addEventListener("submit", (event) => {
@@ -669,6 +828,7 @@ qs("#messageForm").addEventListener("submit", (event) => {
 });
 
 renderBookings();
+renderReservations();
 renderPlayers();
 renderLeaderboard();
 renderMessages();
