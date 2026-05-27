@@ -54,4 +54,16 @@ if [[ -n "${BACKEND_PID}" ]]; then
 fi
 echo "Press Ctrl+C to stop."
 
+URL="http://${HOST}:${WEB_PORT}"
+until curl -s -o /dev/null "${URL}"; do sleep 0.2; done
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+  open -a "Google Chrome" "${URL}" 2>/dev/null || open "${URL}"
+elif command -v google-chrome >/dev/null 2>&1; then
+  google-chrome "${URL}" &
+elif command -v chromium >/dev/null 2>&1; then
+  chromium "${URL}" &
+else
+  xdg-open "${URL}" 2>/dev/null || true
+fi
+
 wait

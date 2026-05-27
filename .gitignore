@@ -47,3 +47,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# AI tooling (skills installed locally per dev)
+.agents/
+skills-lock.json
