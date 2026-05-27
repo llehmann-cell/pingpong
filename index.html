@@ -10,7 +10,7 @@
     <title>Ping Pang Paris</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=booking-happy-top-1" />
+    <link rel="stylesheet" href="styles.css?v=booking-confirm-1" />
   </head>
   <body>
     <div class="app">
@@ -54,9 +54,9 @@
             <div class="card-head">
               <div>
                 <p class="eyebrow">Streak</p>
-                <h2>18 jours actifs</h2>
+                <h2><span data-count-to="18" data-suffix=" jours actifs">0 jours actifs</span></h2>
               </div>
-              <span class="xp-pill">+120 XP</span>
+              <span class="xp-pill" data-count-to="120" data-prefix="+" data-suffix=" XP">+0 XP</span>
             </div>
             <div class="ball-streak" aria-label="Streak sur sept jours">
               <span class="is-done"></span><span class="is-done"></span><span class="is-done"></span>
@@ -125,6 +125,7 @@
         </section>
 
         <section class="screen" id="booking">
+          <div class="booking-left">
           <section class="map-card">
             <div class="card-head">
               <div>
@@ -134,10 +135,6 @@
               <span class="xp-pill">Live</span>
             </div>
             <div class="real-map" id="realMap" aria-label="Carte des tables Ping Pang Paris"></div>
-          </section>
-
-          <section class="selected-spot-card">
-            <div id="selectedSpot"></div>
           </section>
 
           <section class="booking-controls">
@@ -162,6 +159,12 @@
             <div class="booking-list" id="bookingList">
               <article class="booking-row"><strong>16:00</strong><p>3 tables disponibles</p><button type="button"></button></article>
             </div>
+          </section>
+          </div>
+
+          <div class="booking-right">
+          <section class="selected-spot-card">
+            <div id="selectedSpot"></div>
           </section>
 
           <aside class="booking-side">
@@ -197,6 +200,7 @@
               <div id="myReservations"></div>
             </section>
           </aside>
+          </div>
         </section>
 
         <section class="screen" id="social">
@@ -205,7 +209,6 @@
               <p class="eyebrow">Communauté</p>
               <h1>Match avec les bons joueurs.</h1>
             </div>
-            <button class="icon-button" type="button" aria-label="Filtres">≡</button>
           </div>
           <section class="scorer-card">
             <div>
@@ -250,21 +253,22 @@
             </div>
           </div>
 
-          <article class="performance-post">
+          <article class="performance-post" id="performancePost">
             <div class="card-head">
               <div>
                 <p class="eyebrow">Performance postée</p>
-                <h2>Topspin coup droit</h2>
+                <h2 id="perfTitle">Topspin coup droit</h2>
               </div>
-              <span class="xp-pill">84 km/h</span>
+              <span class="xp-pill" id="perfSpeed">84 km/h</span>
             </div>
             <div class="metrics-grid">
-              <span><strong>540</strong> coups</span>
-              <span><strong>38°</strong> angle moyen</span>
-              <span><strong>78%</strong> endurance</span>
-              <span><strong>42 min</strong> temps</span>
+              <span><strong id="perfHits">540</strong> coups</span>
+              <span><strong id="perfAngle">38°</strong> angle moyen</span>
+              <span><strong id="perfEndurance">78%</strong> endurance</span>
+              <span><strong id="perfDuration">42 min</strong> temps</span>
             </div>
-            <button class="primary-action" type="button" data-success="Performance publiée sur ton profil.">Poster ma perf</button>
+            <p class="perf-note" id="perfNote" hidden></p>
+            <button class="primary-action" type="button" id="openPerfModal">Poster ma perf</button>
           </article>
 
           <section class="improvement-card">
@@ -372,14 +376,26 @@
 
           <section class="challenge-grid">
             <article class="challenge-card">
-              <p class="eyebrow">Perso</p>
-              <h2>10 h de panier</h2>
-              <div class="progress"><span style="width: 65%"></span></div>
+              <div>
+                <p class="eyebrow">Perso</p>
+                <h2>10 h de panier</h2>
+                <p class="challenge-sub">6 h 30 min effectuées</p>
+              </div>
+              <div>
+                <div class="progress"><span style="width: 65%"></span></div>
+                <div class="challenge-foot"><span>Avancement</span><span>65%</span></div>
+              </div>
             </article>
             <article class="challenge-card">
-              <p class="eyebrow">Team</p>
-              <h2>Double du mois</h2>
-              <div class="progress"><span style="width: 72%"></span></div>
+              <div>
+                <p class="eyebrow">Team</p>
+                <h2>Double du mois</h2>
+                <p class="challenge-sub">7 matchs sur 10</p>
+              </div>
+              <div>
+                <div class="progress"><span style="width: 72%"></span></div>
+                <div class="challenge-foot"><span>Avancement</span><span>72%</span></div>
+              </div>
             </article>
           </section>
 
@@ -413,14 +429,28 @@
 
     <aside class="message-drawer" id="messageDrawer" aria-hidden="true">
       <div class="drawer-head">
-        <strong>Messages</strong>
+        <button class="icon-button drawer-back" type="button" id="backToThreads" aria-label="Retour" hidden>‹</button>
+        <strong id="drawerTitle">Messages</strong>
         <button class="icon-button" type="button" id="closeMessages" aria-label="Fermer">×</button>
       </div>
-      <div class="message-list" id="messageList"></div>
-      <form class="message-form" id="messageForm">
-        <input type="text" name="message" placeholder="Écrire à la communauté..." autocomplete="off" />
-        <button type="submit">↗</button>
-      </form>
+
+      <div class="drawer-body" id="threadsView">
+        <div class="thread-tabs">
+          <button class="is-active" type="button" data-thread-tab="threads">Discussions <em id="threadsCount">0</em></button>
+          <button type="button" data-thread-tab="requests">Demandes <em id="requestsCount">0</em></button>
+        </div>
+        <div class="thread-list" id="threadList"></div>
+        <div class="thread-list" id="requestList" hidden></div>
+      </div>
+
+      <div class="drawer-body chat-body" id="chatView" hidden>
+        <div class="chat-banner" id="chatBanner" hidden></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <form class="message-form" id="chatForm">
+          <input type="text" name="message" id="chatInput" placeholder="Écrire..." autocomplete="off" />
+          <button type="submit">↗</button>
+        </form>
+      </div>
     </aside>
 
     <aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
@@ -435,7 +465,121 @@
       </div>
     </aside>
 
+    <aside class="modal player-modal" id="playerModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="playerModal"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="playerModalName">
+        <button class="icon-button modal-close" type="button" data-close-modal="playerModal" aria-label="Fermer">×</button>
+        <div id="playerModalContent"></div>
+      </div>
+    </aside>
+
+    <aside class="modal booking-modal" id="bookingModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="bookingModal"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle">
+        <button class="icon-button modal-close" type="button" data-close-modal="bookingModal" aria-label="Fermer">×</button>
+        <form id="bookingForm" class="booking-form">
+          <header class="booking-form-head">
+            <p class="eyebrow">Confirmation</p>
+            <h2 id="bookingModalTitle">Réserver ce créneau</h2>
+            <p>Vérifie les informations avant de valider ta réservation.</p>
+          </header>
+
+          <section class="booking-summary">
+            <div class="booking-summary-row">
+              <span>Créneau</span>
+              <strong id="bookingSummaryTitle">—</strong>
+            </div>
+            <div class="booking-summary-row">
+              <span>Détails</span>
+              <strong id="bookingSummaryMeta">—</strong>
+            </div>
+            <div class="booking-summary-row">
+              <span>Lieu</span>
+              <strong>Ping Pang Paris</strong>
+            </div>
+          </section>
+
+          <section class="booking-account">
+            <p class="eyebrow">Au nom de</p>
+            <div class="booking-account-row">
+              <div class="avatar small">EL</div>
+              <div>
+                <strong>Emma Lehmann</strong>
+                <p>1842 PPR • Membre</p>
+              </div>
+            </div>
+          </section>
+
+          <label class="booking-confirm-check">
+            <input type="checkbox" id="bookingConfirmCheck" />
+            <span>Je confirme cette réservation et accepte les conditions du club.</span>
+          </label>
+
+          <div class="booking-form-actions">
+            <button type="button" class="ghost-action" data-close-modal="bookingModal">Annuler</button>
+            <button type="submit" class="primary-action" id="bookingConfirmSubmit" disabled>Confirmer</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <aside class="modal perf-modal" id="perfModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="perfModal"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="perfModalTitle">
+        <button class="icon-button modal-close" type="button" data-close-modal="perfModal" aria-label="Fermer">×</button>
+        <form id="perfForm" class="perf-form">
+          <header class="perf-form-head">
+            <p class="eyebrow">Nouvelle performance</p>
+            <h2 id="perfModalTitle">Poster ta perf</h2>
+            <p>Ajoute les détails de ta séance, ils s'afficheront sur ton profil.</p>
+          </header>
+          <label>
+            <span>Discipline</span>
+            <input type="text" name="title" value="Topspin coup droit" required />
+          </label>
+          <div class="perf-form-grid">
+            <label>
+              <span>Vitesse (km/h)</span>
+              <input type="number" name="speed" value="84" min="0" max="200" required />
+            </label>
+            <label>
+              <span>Coups</span>
+              <input type="number" name="hits" value="540" min="0" required />
+            </label>
+            <label>
+              <span>Angle (°)</span>
+              <input type="number" name="angle" value="38" min="0" max="90" required />
+            </label>
+            <label>
+              <span>Endurance (%)</span>
+              <input type="number" name="endurance" value="78" min="0" max="100" required />
+            </label>
+            <label>
+              <span>Durée (min)</span>
+              <input type="number" name="duration" value="42" min="0" required />
+            </label>
+            <label>
+              <span>Visibilité</span>
+              <select name="visibility">
+                <option value="public">Public</option>
+                <option value="club">Club</option>
+                <option value="private">Privé</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Note</span>
+            <textarea name="note" rows="2" placeholder="Comment s'est passée la séance ?"></textarea>
+          </label>
+          <div class="perf-form-actions">
+            <button type="button" class="ghost-action" data-close-modal="perfModal">Annuler</button>
+            <button type="submit" class="primary-action">Publier</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
     <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=booking-happy-top-1"></script>
+    <script src="app.js?v=booking-confirm-1"></script>
   </body>
 </html>
