@@ -79,19 +79,7 @@ const leaderboard = [
 
 const ME = "Emma Lehmann";
 const chat = {
-  threads: [
-    {
-      peer: "Global Ping Pang",
-      status: "accepted",
-      unread: 1,
-      isGlobal: true,
-      messages: [
-        { author: "Maya Chen", text: "Qui est dispo pour le Happy Hours de 18:30 ?", time: Date.now() - 1000 * 60 * 18 },
-        { author: "Noah Klein", text: "Je prends Table 04, objectif local legend ce soir.", time: Date.now() - 1000 * 60 * 12 },
-        { author: ME, text: "Je passe après ma séance, je peux faire un double.", time: Date.now() - 1000 * 60 * 4 },
-      ],
-    },
-  ],
+  threads: [],
   activeThread: null,
   view: "list", // "list" | "chat"
   tab: "threads", // "threads" | "requests"
@@ -104,13 +92,6 @@ const autoReplyPool = [
   "Top, j'arrive avec ma raquette.",
   "Carrément, ça va être propre.",
   "Faut que je trouve une table dispo, je te tiens au courant.",
-];
-
-const globalReplyPool = [
-  { author: "Lila Martin", text: "Je suis dispo vers 19:00, niveau 1400-1600 parfait." },
-  { author: "Ari Benali", text: "Je peux lancer une tournante si on est 4." },
-  { author: "Noah Klein", text: "Ajoutez-vous sur la réservation, il reste de la place." },
-  { author: "Maya Chen", text: "Je confirme le ladder dans 20 min." },
 ];
 
 const products = [
@@ -194,51 +175,6 @@ const products = [
   },
 ];
 
-const shopTips = [
-  {
-    label: "Raquette",
-    title: "Quand changer sa raquette ?",
-    answer: "Garde ton bois tant que tu contrôles bien la balle. Change surtout si le manche bouge, si le bois se fissure ou si ton style a clairement évolué.",
-    signal: "Check tous les 6 mois",
-    action: "Diagnostic raquette ajouté à ton matériel.",
-  },
-  {
-    label: "Revêtements",
-    title: "Quand changer ses plaques ?",
-    answer: "Si la balle glisse au topspin, si le grip devient brillant ou si tu dépasses 180 à 220 h de jeu, planifie un remplacement.",
-    signal: "183 / 200 h",
-    action: "Rappel revêtements activé.",
-  },
-  {
-    label: "Chaussures",
-    title: "Quand remplacer ses chaussures ?",
-    answer: "Change-les quand l'accroche latérale baisse, que la semelle s'arrondit ou que tu sens moins de stabilité sur les démarrages courts.",
-    signal: "Grip latéral d'abord",
-    action: "Check chaussures ajouté à ta routine.",
-  },
-  {
-    label: "Tips",
-    title: "Quel équipement selon ton jeu ?",
-    answer: "Attaquant rotation: priorité grip et maintien. Défenseur: confort et endurance. Double: chaussures stables et textile respirant.",
-    signal: "IA équipement",
-    action: "Suggestion IA sauvegardée.",
-  },
-  {
-    label: "Entretien",
-    title: "Routine après séance",
-    answer: "Nettoie les plaques, laisse sécher, protège avec un film, puis note la sensation de grip dans ton profil matériel.",
-    signal: "2 min après match",
-    action: "Routine entretien ajoutée.",
-  },
-  {
-    label: "FAQ",
-    title: "Faut-il acheter plus rapide ?",
-    answer: "Seulement si tu tiens déjà l'échange sous pression. Sinon, gagne plus avec contrôle, placement et régularité qu'avec une plaque trop dynamique.",
-    signal: "Contrôle > vitesse",
-    action: "Conseil progression enregistré.",
-  },
-];
-
 const cart = [];
 const API_BASE_URL = window.PINGPANG_API_URL || "http://127.0.0.1:4000";
 
@@ -258,8 +194,8 @@ const tableSpots = [
     visits: 14,
     format: "Outdoor concrete",
     crowd: "Busy after 18:30",
-    x: 34,
-    y: 38,
+    lat: 48.8758,
+    lng: 2.3669,
   },
   {
     name: "Spin Lab",
@@ -269,8 +205,8 @@ const tableSpots = [
     visits: 11,
     format: "Indoor club tables",
     crowd: "Ranked ladder tonight",
-    x: 66,
-    y: 28,
+    lat: 48.8717,
+    lng: 2.3812,
   },
   {
     name: "Riverside Pair",
@@ -280,8 +216,8 @@ const tableSpots = [
     visits: 8,
     format: "Two public tables",
     crowd: "Open challenge queue",
-    x: 48,
-    y: 68,
+    lat: 48.8859,
+    lng: 2.3754,
   },
 ];
 
@@ -299,13 +235,6 @@ const gearSignals = [
 const pendingMatches = [
   { player: "Maya Chen", result: "11-8, 9-11, 11-6, 11-7", delta: "+18 PPR" },
   { player: "Noa Simon", result: "2 vs 2 jeudi", delta: "pending" },
-];
-
-const mapTiles = [
-  "https://tile.openstreetmap.org/14/8299/5635.png",
-  "https://tile.openstreetmap.org/14/8300/5635.png",
-  "https://tile.openstreetmap.org/14/8299/5636.png",
-  "https://tile.openstreetmap.org/14/8300/5636.png",
 ];
 
 const activityFeed = [
@@ -333,9 +262,6 @@ const badges = ["Local Legend", "Serve Reader", "12 Day Streak", "Tournament Hos
 const integrations = ["Garmin", "Apple Health", "Strava import"];
 const state = {
   selectedSpot: tableSpots[0].name,
-  mapZoom: 1,
-  mapOffsetX: 0,
-  mapOffsetY: 0,
   bookingMode: "tables",
   bookingDate: "wed",
   reservations: [],
@@ -383,7 +309,6 @@ const qsa = (selector) => [...document.querySelectorAll(selector)];
 
 const viewOrder = ["home", "booking", "social", "shop", "profile", "challenges"];
 let currentView = "home";
-let mapDrag = null;
 
 function setView(viewId) {
   const oldIdx = viewOrder.indexOf(currentView);
@@ -405,6 +330,12 @@ function setView(viewId) {
   qs("#viewSubtitle").textContent = subtitles[viewId] || "Ping Pang";
   qsa(`[data-view="${viewId}"]`).forEach((button) => button.classList.remove("has-dot"));
   window.scrollTo({ top: 0, behavior: "smooth" });
+  if (viewId === "booking") {
+    // Defer until the screen transition finishes and the container has its real size
+    setTimeout(ensureMapReady, 0);
+    setTimeout(ensureMapReady, 220);
+    setTimeout(ensureMapReady, 500);
+  }
 }
 
 function showSuccess(text) {
@@ -535,7 +466,7 @@ function renderThreadList() {
     ? accepted
         .map((t) => {
           const last = t.messages[t.messages.length - 1];
-          const preview = last ? `${last.author === ME ? "Toi" : last.author} : ${last.text}` : "Nouvelle discussion";
+          const preview = last ? (last.author === ME ? "Toi : " : "") + last.text : "Nouvelle discussion";
           return `
             <button class="thread-row" type="button" data-open-thread="${t.peer}">
               <span class="avatar">${initials(t.peer)}</span>
@@ -607,7 +538,7 @@ function renderChat() {
     setDrawerView("list");
     return;
   }
-  qs("#drawerTitle").textContent = thread.isGlobal ? "Chat global" : thread.peer;
+  qs("#drawerTitle").textContent = thread.peer;
   const banner = qs("#chatBanner");
   if (thread.status === "pending-out") {
     banner.hidden = false;
@@ -623,7 +554,6 @@ function renderChat() {
         .map(
           (m) => `
             <div class="chat-bubble ${m.author === ME ? "mine" : ""}">
-              ${thread.isGlobal && m.author !== ME ? `<strong class="chat-author">${m.author}</strong>` : ""}
               ${m.text}
               <em>${formatTime(m.time)}</em>
             </div>
@@ -677,13 +607,12 @@ function declineRequest(peer) {
 }
 
 function appendBubble(message) {
-  const thread = findThread(chat.activeThread);
   const list = qs("#chatMessages");
   const empty = list.querySelector(".empty-state");
   if (empty) empty.remove();
   const bubble = document.createElement("div");
   bubble.className = `chat-bubble ${message.author === ME ? "mine" : ""}`;
-  bubble.innerHTML = `${thread?.isGlobal && message.author !== ME ? `<strong class="chat-author">${message.author}</strong>` : ""}${message.text}<em>${formatTime(message.time)}</em>`;
+  bubble.innerHTML = `${message.text}<em>${formatTime(message.time)}</em>`;
   list.appendChild(bubble);
   list.scrollTop = list.scrollHeight;
 }
@@ -700,21 +629,19 @@ function sendChatMessage(text) {
   thread.messages.push(msg);
   appendBubble(msg);
   renderThreadList();
-  const globalReply = globalReplyPool[Math.floor(Math.random() * globalReplyPool.length)];
-  const reply = thread.isGlobal ? globalReply.text : autoReplyPool[Math.floor(Math.random() * autoReplyPool.length)];
-  const replyAuthor = thread.isGlobal ? globalReply.author : thread.peer;
+  const reply = autoReplyPool[Math.floor(Math.random() * autoReplyPool.length)];
   setTimeout(() => {
     if (chat.activeThread !== thread.peer) return;
     const list = qs("#chatMessages");
     const typing = document.createElement("div");
     typing.className = "typing-indicator";
     typing.id = "typingIndicator";
-    typing.textContent = `${replyAuthor} écrit…`;
+    typing.textContent = `${thread.peer} écrit…`;
     list.appendChild(typing);
     list.scrollTop = list.scrollHeight;
   }, 400);
   setTimeout(() => {
-    const replyMsg = { author: replyAuthor, text: reply, time: Date.now() };
+    const replyMsg = { author: thread.peer, text: reply, time: Date.now() };
     thread.messages.push(replyMsg);
     if (chat.activeThread !== thread.peer) {
       thread.unread = (thread.unread || 0) + 1;
@@ -817,37 +744,85 @@ function renderTables() {
     .join("");
 }
 
+let leafletMap = null;
+const leafletMarkers = new Map();
+
+function initLeaflet() {
+  if (leafletMap || typeof L === "undefined") return;
+  const container = qs("#realMap");
+  if (!container) return;
+  // Wait for the container to have non-zero size (booking screen may be hidden)
+  const rect = container.getBoundingClientRect();
+  if (rect.width < 50 || rect.height < 50) return;
+  container.innerHTML = "";
+  // Center on the cluster of spots
+  const center = tableSpots.reduce(
+    (acc, s) => [acc[0] + s.lat / tableSpots.length, acc[1] + s.lng / tableSpots.length],
+    [0, 0],
+  );
+  leafletMap = L.map(container, {
+    zoomControl: true,
+    attributionControl: true,
+    scrollWheelZoom: true,
+    preferCanvas: false,
+  }).setView(center, 14);
+
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+    maxZoom: 19,
+    crossOrigin: true,
+  }).addTo(leafletMap);
+
+  tableSpots.forEach((spot) => {
+    const marker = L.marker([spot.lat, spot.lng], {
+      icon: buildSpotIcon(spot.name === state.selectedSpot),
+      title: spot.name,
+    }).addTo(leafletMap);
+    marker.on("click", () => {
+      state.selectedSpot = spot.name;
+      renderMap();
+    });
+    leafletMarkers.set(spot.name, marker);
+  });
+
+  // Watch container resizes (when booking screen toggles visible)
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => {
+      if (leafletMap) leafletMap.invalidateSize();
+    });
+    ro.observe(container);
+  }
+  // Triple-tap invalidate for safety
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => leafletMap && leafletMap.invalidateSize());
+  });
+}
+
+function ensureMapReady() {
+  if (!leafletMap) initLeaflet();
+  if (leafletMap) {
+    leafletMap.invalidateSize();
+  }
+}
+
+function buildSpotIcon(active) {
+  return L.divIcon({
+    className: "leaflet-spot",
+    html: `<span class="map-pin ${active ? "is-active" : ""}" aria-hidden="true">${active ? "P" : "T"}</span>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
+  });
+}
+
 function renderMap() {
   const selectedSpot = tableSpots.find((spot) => spot.name === state.selectedSpot) || tableSpots[0];
-  const mapTransform = `translate(${state.mapOffsetX}px, ${state.mapOffsetY}px) scale(${state.mapZoom})`;
-  qs("#realMap").innerHTML = `
-    <div class="map-layer" style="transform:${mapTransform}">
-      <div class="tile-grid">
-        ${mapTiles.map((tile) => `<img src="${tile}" alt="" loading="lazy" onerror="this.style.display='none';" />`).join("")}
-      </div>
-      ${tableSpots
-        .map(
-          (spot) => `
-            <button
-              class="map-pin ${spot.name === selectedSpot.name ? "is-active" : ""}"
-              type="button"
-              style="left:${spot.x}%;top:${spot.y}%"
-              data-map-spot="${spot.name}"
-              aria-label="Sélectionner ${spot.name}"
-            >${spot.name === selectedSpot.name ? "P" : "T"}</button>
-          `,
-        )
-        .join("")}
-    </div>
-    <div class="map-wash"></div>
-    <div class="map-controls" aria-label="Contrôles de carte">
-      <button type="button" data-map-control="zoom-in" aria-label="Zoomer">+</button>
-      <button type="button" data-map-control="zoom-out" aria-label="Dézoomer">−</button>
-      <button type="button" data-map-control="reset" aria-label="Recentrer">⌂</button>
-    </div>
-    <span class="map-hint">Glisse la carte • clique un spot</span>
-    <span class="map-attribution">Map data OpenStreetMap contributors</span>
-  `;
+  if (typeof L !== "undefined" && !leafletMap) initLeaflet();
+  if (leafletMap) {
+    leafletMarkers.forEach((marker, name) => {
+      marker.setIcon(buildSpotIcon(name === selectedSpot.name));
+    });
+    leafletMap.panTo([selectedSpot.lat, selectedSpot.lng], { animate: true, duration: 0.6 });
+  }
   qs("#selectedSpot").innerHTML = `
     <div>
       <p class="eyebrow">Selected table</p>
@@ -1060,27 +1035,6 @@ function formatPrice(price) {
 }
 
 function renderShop(filter = "all") {
-  if (filter === "tips") {
-    qs("#shopGrid").innerHTML = shopTips
-      .map(
-        (tip) => `
-          <article class="shop-tip-card">
-            <div>
-              <p class="eyebrow">${tip.label}</p>
-              <h2>${tip.title}</h2>
-              <p>${tip.answer}</p>
-            </div>
-            <footer>
-              <span>${tip.signal}</span>
-              <button class="ghost-action" type="button" data-success="${tip.action}">Sauvegarder</button>
-            </footer>
-          </article>
-        `,
-      )
-      .join("");
-    return;
-  }
-
   const visibleProducts = filter === "all" ? products : products.filter((product) => product.category === filter);
   qs("#shopGrid").innerHTML = visibleProducts
     .map(
@@ -1298,20 +1252,6 @@ document.addEventListener("click", (event) => {
     showSuccess(`${mapSpot.dataset.mapSpot} sélectionnée.`);
   }
 
-  const mapControl = event.target.closest("[data-map-control]");
-  if (mapControl) {
-    const action = mapControl.dataset.mapControl;
-    if (action === "zoom-in") state.mapZoom = Math.min(1.8, Number((state.mapZoom + 0.15).toFixed(2)));
-    if (action === "zoom-out") state.mapZoom = Math.max(1, Number((state.mapZoom - 0.15).toFixed(2)));
-    if (action === "reset") {
-      state.mapZoom = 1;
-      state.mapOffsetX = 0;
-      state.mapOffsetY = 0;
-    }
-    renderMap();
-    showSuccess(action === "reset" ? "Carte recentrée." : `Zoom carte ${Math.round(state.mapZoom * 100)}%.`);
-  }
-
   const scoreButton = event.target.closest("[data-score]");
   if (scoreButton) {
     state.score[scoreButton.dataset.score] += 1;
@@ -1389,36 +1329,6 @@ document.addEventListener("click", (event) => {
     socialFilter.classList.toggle("is-active");
     showSuccess("Filtres de matching mis à jour.");
   }
-});
-
-document.addEventListener("pointerdown", (event) => {
-  const map = event.target.closest("#realMap");
-  if (!map || event.target.closest("button")) return;
-  mapDrag = {
-    id: event.pointerId,
-    startX: event.clientX,
-    startY: event.clientY,
-    originX: state.mapOffsetX,
-    originY: state.mapOffsetY,
-  };
-  map.classList.add("is-dragging");
-  map.setPointerCapture?.(event.pointerId);
-});
-
-document.addEventListener("pointermove", (event) => {
-  if (!mapDrag || mapDrag.id !== event.pointerId) return;
-  state.mapOffsetX = mapDrag.originX + event.clientX - mapDrag.startX;
-  state.mapOffsetY = mapDrag.originY + event.clientY - mapDrag.startY;
-  const layer = qs("#realMap .map-layer");
-  if (layer) {
-    layer.style.transform = `translate(${state.mapOffsetX}px, ${state.mapOffsetY}px) scale(${state.mapZoom})`;
-  }
-});
-
-document.addEventListener("pointerup", (event) => {
-  if (!mapDrag || mapDrag.id !== event.pointerId) return;
-  qs("#realMap")?.classList.remove("is-dragging");
-  mapDrag = null;
 });
 
 qs("#scanRubber").addEventListener("click", () => {

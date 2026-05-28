@@ -10,7 +10,9 @@
     <title>Ping Pang Paris</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=shop-ai-tips-1" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="styles.css?v=leaflet-2" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
   </head>
   <body>
     <div class="app">
@@ -320,7 +322,6 @@
             <button type="button" data-shop-filter="icons">Icons</button>
             <button type="button" data-shop-filter="essential">Essential</button>
             <button type="button" data-shop-filter="effect">Effect</button>
-            <button type="button" data-shop-filter="tips">AI Tips</button>
           </div>
 
           <div class="shop-highlight">
@@ -581,6 +582,6 @@
     </aside>
 
     <div class="success-toast" id="successToast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=shop-ai-tips-1"></script>
+    <script src="app.js?v=leaflet-3"></script>
   </body>
 </html>
