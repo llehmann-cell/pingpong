@@ -79,7 +79,19 @@ const leaderboard = [
 
 const ME = "Emma Lehmann";
 const chat = {
-  threads: [],
+  threads: [
+    {
+      peer: "Global Ping Pang",
+      status: "accepted",
+      unread: 1,
+      isGlobal: true,
+      messages: [
+        { author: "Maya Chen", text: "Qui est dispo pour le Happy Hours de 18:30 ?", time: Date.now() - 1000 * 60 * 18 },
+        { author: "Noah Klein", text: "Je prends Table 04, objectif local legend ce soir.", time: Date.now() - 1000 * 60 * 12 },
+        { author: ME, text: "Je passe après ma séance, je peux faire un double.", time: Date.now() - 1000 * 60 * 4 },
+      ],
+    },
+  ],
   activeThread: null,
   view: "list", // "list" | "chat"
   tab: "threads", // "threads" | "requests"
@@ -92,6 +104,13 @@ const autoReplyPool = [
   "Top, j'arrive avec ma raquette.",
   "Carrément, ça va être propre.",
   "Faut que je trouve une table dispo, je te tiens au courant.",
+];
+
+const globalReplyPool = [
+  { author: "Lila Martin", text: "Je suis dispo vers 19:00, niveau 1400-1600 parfait." },
+  { author: "Ari Benali", text: "Je peux lancer une tournante si on est 4." },
+  { author: "Noah Klein", text: "Ajoutez-vous sur la réservation, il reste de la place." },
+  { author: "Maya Chen", text: "Je confirme le ladder dans 20 min." },
 ];
 
 const products = [
@@ -172,6 +191,51 @@ const products = [
     price: 35,
     category: "icons",
     img: "https://pingpang.paris/cdn/shop/files/CYW-5_e7cd65c1-888b-4c72-90de-cf2aaae354d1_1024x.jpg?v=1734627615",
+  },
+];
+
+const shopTips = [
+  {
+    label: "Raquette",
+    title: "Quand changer sa raquette ?",
+    answer: "Garde ton bois tant que tu contrôles bien la balle. Change surtout si le manche bouge, si le bois se fissure ou si ton style a clairement évolué.",
+    signal: "Check tous les 6 mois",
+    action: "Diagnostic raquette ajouté à ton matériel.",
+  },
+  {
+    label: "Revêtements",
+    title: "Quand changer ses plaques ?",
+    answer: "Si la balle glisse au topspin, si le grip devient brillant ou si tu dépasses 180 à 220 h de jeu, planifie un remplacement.",
+    signal: "183 / 200 h",
+    action: "Rappel revêtements activé.",
+  },
+  {
+    label: "Chaussures",
+    title: "Quand remplacer ses chaussures ?",
+    answer: "Change-les quand l'accroche latérale baisse, que la semelle s'arrondit ou que tu sens moins de stabilité sur les démarrages courts.",
+    signal: "Grip latéral d'abord",
+    action: "Check chaussures ajouté à ta routine.",
+  },
+  {
+    label: "Tips",
+    title: "Quel équipement selon ton jeu ?",
+    answer: "Attaquant rotation: priorité grip et maintien. Défenseur: confort et endurance. Double: chaussures stables et textile respirant.",
+    signal: "IA équipement",
+    action: "Suggestion IA sauvegardée.",
+  },
+  {
+    label: "Entretien",
+    title: "Routine après séance",
+    answer: "Nettoie les plaques, laisse sécher, protège avec un film, puis note la sensation de grip dans ton profil matériel.",
+    signal: "2 min après match",
+    action: "Routine entretien ajoutée.",
+  },
+  {
+    label: "FAQ",
+    title: "Faut-il acheter plus rapide ?",
+    answer: "Seulement si tu tiens déjà l'échange sous pression. Sinon, gagne plus avec contrôle, placement et régularité qu'avec une plaque trop dynamique.",
+    signal: "Contrôle > vitesse",
+    action: "Conseil progression enregistré.",
   },
 ];
 
@@ -269,6 +333,9 @@ const badges = ["Local Legend", "Serve Reader", "12 Day Streak", "Tournament Hos
 const integrations = ["Garmin", "Apple Health", "Strava import"];
 const state = {
   selectedSpot: tableSpots[0].name,
+  mapZoom: 1,
+  mapOffsetX: 0,
+  mapOffsetY: 0,
   bookingMode: "tables",
   bookingDate: "wed",
   reservations: [],
@@ -316,6 +383,7 @@ const qsa = (selector) => [...document.querySelectorAll(selector)];
 
 const viewOrder = ["home", "booking", "social", "shop", "profile", "challenges"];
 let currentView = "home";
+let mapDrag = null;
 
 function setView(viewId) {
   const oldIdx = viewOrder.indexOf(currentView);
@@ -467,7 +535,7 @@ function renderThreadList() {
     ? accepted
         .map((t) => {
           const last = t.messages[t.messages.length - 1];
-          const preview = last ? (last.author === ME ? "Toi : " : "") + last.text : "Nouvelle discussion";
+          const preview = last ? `${last.author === ME ? "Toi" : last.author} : ${last.text}` : "Nouvelle discussion";
           return `
             <button class="thread-row" type="button" data-open-thread="${t.peer}">
               <span class="avatar">${initials(t.peer)}</span>
@@ -539,7 +607,7 @@ function renderChat() {
     setDrawerView("list");
     return;
   }
-  qs("#drawerTitle").textContent = thread.peer;
+  qs("#drawerTitle").textContent = thread.isGlobal ? "Chat global" : thread.peer;
   const banner = qs("#chatBanner");
   if (thread.status === "pending-out") {
     banner.hidden = false;
@@ -555,6 +623,7 @@ function renderChat() {
         .map(
           (m) => `
             <div class="chat-bubble ${m.author === ME ? "mine" : ""}">
+              ${thread.isGlobal && m.author !== ME ? `<strong class="chat-author">${m.author}</strong>` : ""}
               ${m.text}
               <em>${formatTime(m.time)}</em>
             </div>
@@ -608,12 +677,13 @@ function declineRequest(peer) {
 }
 
 function appendBubble(message) {
+  const thread = findThread(chat.activeThread);
   const list = qs("#chatMessages");
   const empty = list.querySelector(".empty-state");
   if (empty) empty.remove();
   const bubble = document.createElement("div");
   bubble.className = `chat-bubble ${message.author === ME ? "mine" : ""}`;
-  bubble.innerHTML = `${message.text}<em>${formatTime(message.time)}</em>`;
+  bubble.innerHTML = `${thread?.isGlobal && message.author !== ME ? `<strong class="chat-author">${message.author}</strong>` : ""}${message.text}<em>${formatTime(message.time)}</em>`;
   list.appendChild(bubble);
   list.scrollTop = list.scrollHeight;
 }
@@ -630,19 +700,21 @@ function sendChatMessage(text) {
   thread.messages.push(msg);
   appendBubble(msg);
   renderThreadList();
-  const reply = autoReplyPool[Math.floor(Math.random() * autoReplyPool.length)];
+  const globalReply = globalReplyPool[Math.floor(Math.random() * globalReplyPool.length)];
+  const reply = thread.isGlobal ? globalReply.text : autoReplyPool[Math.floor(Math.random() * autoReplyPool.length)];
+  const replyAuthor = thread.isGlobal ? globalReply.author : thread.peer;
   setTimeout(() => {
     if (chat.activeThread !== thread.peer) return;
     const list = qs("#chatMessages");
     const typing = document.createElement("div");
     typing.className = "typing-indicator";
     typing.id = "typingIndicator";
-    typing.textContent = `${thread.peer} écrit…`;
+    typing.textContent = `${replyAuthor} écrit…`;
     list.appendChild(typing);
     list.scrollTop = list.scrollHeight;
   }, 400);
   setTimeout(() => {
-    const replyMsg = { author: thread.peer, text: reply, time: Date.now() };
+    const replyMsg = { author: replyAuthor, text: reply, time: Date.now() };
     thread.messages.push(replyMsg);
     if (chat.activeThread !== thread.peer) {
       thread.unread = (thread.unread || 0) + 1;
@@ -747,24 +819,33 @@ function renderTables() {
 
 function renderMap() {
   const selectedSpot = tableSpots.find((spot) => spot.name === state.selectedSpot) || tableSpots[0];
+  const mapTransform = `translate(${state.mapOffsetX}px, ${state.mapOffsetY}px) scale(${state.mapZoom})`;
   qs("#realMap").innerHTML = `
-    <div class="tile-grid">
-      ${mapTiles.map((tile) => `<img src="${tile}" alt="" loading="lazy" onerror="this.style.display='none';" />`).join("")}
+    <div class="map-layer" style="transform:${mapTransform}">
+      <div class="tile-grid">
+        ${mapTiles.map((tile) => `<img src="${tile}" alt="" loading="lazy" onerror="this.style.display='none';" />`).join("")}
+      </div>
+      ${tableSpots
+        .map(
+          (spot) => `
+            <button
+              class="map-pin ${spot.name === selectedSpot.name ? "is-active" : ""}"
+              type="button"
+              style="left:${spot.x}%;top:${spot.y}%"
+              data-map-spot="${spot.name}"
+              aria-label="Sélectionner ${spot.name}"
+            >${spot.name === selectedSpot.name ? "P" : "T"}</button>
+          `,
+        )
+        .join("")}
     </div>
     <div class="map-wash"></div>
-    ${tableSpots
-      .map(
-        (spot) => `
-          <button
-            class="map-pin ${spot.name === selectedSpot.name ? "is-active" : ""}"
-            type="button"
-            style="left:${spot.x}%;top:${spot.y}%"
-            data-map-spot="${spot.name}"
-            aria-label="Sélectionner ${spot.name}"
-          >${spot.name === selectedSpot.name ? "P" : "T"}</button>
-        `,
-      )
-      .join("")}
+    <div class="map-controls" aria-label="Contrôles de carte">
+      <button type="button" data-map-control="zoom-in" aria-label="Zoomer">+</button>
+      <button type="button" data-map-control="zoom-out" aria-label="Dézoomer">−</button>
+      <button type="button" data-map-control="reset" aria-label="Recentrer">⌂</button>
+    </div>
+    <span class="map-hint">Glisse la carte • clique un spot</span>
     <span class="map-attribution">Map data OpenStreetMap contributors</span>
   `;
   qs("#selectedSpot").innerHTML = `
@@ -979,6 +1060,27 @@ function formatPrice(price) {
 }
 
 function renderShop(filter = "all") {
+  if (filter === "tips") {
+    qs("#shopGrid").innerHTML = shopTips
+      .map(
+        (tip) => `
+          <article class="shop-tip-card">
+            <div>
+              <p class="eyebrow">${tip.label}</p>
+              <h2>${tip.title}</h2>
+              <p>${tip.answer}</p>
+            </div>
+            <footer>
+              <span>${tip.signal}</span>
+              <button class="ghost-action" type="button" data-success="${tip.action}">Sauvegarder</button>
+            </footer>
+          </article>
+        `,
+      )
+      .join("");
+    return;
+  }
+
   const visibleProducts = filter === "all" ? products : products.filter((product) => product.category === filter);
   qs("#shopGrid").innerHTML = visibleProducts
     .map(
@@ -1196,6 +1298,20 @@ document.addEventListener("click", (event) => {
     showSuccess(`${mapSpot.dataset.mapSpot} sélectionnée.`);
   }
 
+  const mapControl = event.target.closest("[data-map-control]");
+  if (mapControl) {
+    const action = mapControl.dataset.mapControl;
+    if (action === "zoom-in") state.mapZoom = Math.min(1.8, Number((state.mapZoom + 0.15).toFixed(2)));
+    if (action === "zoom-out") state.mapZoom = Math.max(1, Number((state.mapZoom - 0.15).toFixed(2)));
+    if (action === "reset") {
+      state.mapZoom = 1;
+      state.mapOffsetX = 0;
+      state.mapOffsetY = 0;
+    }
+    renderMap();
+    showSuccess(action === "reset" ? "Carte recentrée." : `Zoom carte ${Math.round(state.mapZoom * 100)}%.`);
+  }
+
   const scoreButton = event.target.closest("[data-score]");
   if (scoreButton) {
     state.score[scoreButton.dataset.score] += 1;
@@ -1273,6 +1389,36 @@ document.addEventListener("click", (event) => {
     socialFilter.classList.toggle("is-active");
     showSuccess("Filtres de matching mis à jour.");
   }
+});
+
+document.addEventListener("pointerdown", (event) => {
+  const map = event.target.closest("#realMap");
+  if (!map || event.target.closest("button")) return;
+  mapDrag = {
+    id: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    originX: state.mapOffsetX,
+    originY: state.mapOffsetY,
+  };
+  map.classList.add("is-dragging");
+  map.setPointerCapture?.(event.pointerId);
+});
+
+document.addEventListener("pointermove", (event) => {
+  if (!mapDrag || mapDrag.id !== event.pointerId) return;
+  state.mapOffsetX = mapDrag.originX + event.clientX - mapDrag.startX;
+  state.mapOffsetY = mapDrag.originY + event.clientY - mapDrag.startY;
+  const layer = qs("#realMap .map-layer");
+  if (layer) {
+    layer.style.transform = `translate(${state.mapOffsetX}px, ${state.mapOffsetY}px) scale(${state.mapZoom})`;
+  }
+});
+
+document.addEventListener("pointerup", (event) => {
+  if (!mapDrag || mapDrag.id !== event.pointerId) return;
+  qs("#realMap")?.classList.remove("is-dragging");
+  mapDrag = null;
 });
 
 qs("#scanRubber").addEventListener("click", () => {
